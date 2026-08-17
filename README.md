@@ -15,35 +15,44 @@ structurally rather than by promise (`tests/test_no_live_calls.py`).
 
 ## The short version
 
-**What I noticed.** GiveCampus publishes an API and no client library in any language, and
-their docs warn that production and sandbox tokens are not interchangeable. That warning is
-the whole problem: the tokens look identical, so the mistake is silent, and this is a
-platform moving real donations.
+**The problem.** GiveCampus publishes an API and ships no client library in any language, and
+the docs warn that production and sandbox tokens are not interchangeable. That warning is the
+whole issue: the two tokens look identical, so pointing the wrong one at the wrong environment
+fails silently rather than loudly, and this is a platform moving real donations for real
+institutions.
 
 **What I built.** A typed Python client covering **55 operations generated from their own 16
-YAML specs** rather than hand-written, plus a CLI that refuses to fire when the token does
-not match the environment you are pointing at.
+YAML specs** rather than hand-written, plus a CLI that refuses to fire when the token does not
+match the environment you are targeting.
 
-**The guard runs before a connection exists.** It executes in `__init__`, ahead of any
-`httpx.Client` being constructed, so a mismatched token cannot reach the network at all
-rather than being caught by a 401 after the request has already left. Since GiveCampus
-publishes no token format, it binds `SHA-256(token)` to an environment locally instead of
-guessing at a prefix, and the token itself never touches disk.
+**How it solves it.** The environment check runs inside `__init__`, before any `httpx.Client`
+is constructed, so a mismatched token cannot reach the network at all instead of being caught
+by a 401 after the request has already left. Since GiveCampus publishes no token format, it
+binds `SHA-256(token)` to an environment locally rather than guessing at a prefix, and the
+token never touches disk. Generating the models from the specs rather than typing them means
+the client cannot silently drift from the API as it changes.
 
-**What I found while building it.** Their example payloads disagree with their own spec in
-**six places**, including `subscription.id` typed as a string but shown as the integer `2295`,
-and a misspelled `constituent_identifer` sitting in the payload next to the correctly spelled
-one. There is also a `limited_months` versus `limited_monthly` disagreement between two of
-their spec files. The models widen exactly those fields, each marked `# DRIFT:` inline, and
-keep unknown keys with `extra="allow"` so nothing silently vanishes from a donor record.
+**Why this is worth something to GiveCampus.** Three things. Every integration partner
+currently writes this layer themselves, so the same mistakes get made repeatedly and land in
+your support queue rather than in a shared library. A guard that fails before the request
+leaves turns a class of silent data errors into a startup error, which is the difference
+between a confusing support ticket and a developer fixing their own config in ten seconds. And
+the generated models surface spec drift the moment it appears, which is how I found the six
+issues below without ever calling the API.
 
-**81 tests, fully offline, and no request was ever sent to GiveCampus.** This handles donor
-and payment data, so I built the whole thing against published documentation and fixtures
-drawn from their own examples. That constraint is enforced in the code, not promised in a
-sentence.
+**What I found on the way.** Their example payloads disagree with their own spec in **six
+places**, including `subscription.id` typed as a string but shown as the integer `2295`, and a
+misspelled `constituent_identifer` sitting in a payload next to the correctly spelled one. Two
+spec files also disagree on `limited_months` versus `limited_monthly`. The models widen exactly
+those fields, each marked `# DRIFT:` inline, and keep unknown keys with `extra="allow"` so
+nothing silently vanishes from a donor record.
 
-**What it is not.** Untested against the live API by design, so treat the drift list as
-"their published material disagrees with itself" rather than "the server returns this."
+**81 tests, fully offline, and no request was ever sent to GiveCampus.** This handles donor and
+payment data, so the whole thing is built against published documentation and fixtures taken
+from their own examples. That constraint is enforced in the code, not promised in a sentence.
+
+**What it is not.** Untested against the live API by design, so read the drift list as "their
+published material disagrees with itself" rather than "the server returns this."
 
 ## Why the CLI half exists
 
