@@ -1,0 +1,11 @@
+---
+type: object
+properties:
+  request_id:
+    type: string
+  status:
+    type: string
+    enum:
+    - in_progress
+    - completed
+    - error

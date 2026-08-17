@@ -1,0 +1,881 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GiveCampus Event Registrations API
+  description: |-
+    The Event Registrations API retrieves all registrations for a specific event. We provide a list of registrations in JSON format, each of which includes information about the registrant and their guests. <h2>Security</h2> <p>Every API request must have a bearer token attached in the Authorization header.</p> <p>These tokens are generated within the GiveCampus UI and only school administrators with super-user permissions can generate and manage them. You will choose this initial set of “full” administrators during the GiveCampus onboarding process.</p> <p>All API responses will be delivered over a secure HTTPS connection, and a TLS version of 1.2 or 1.3 is required.</p> <p>GiveCampus maintains detailed logs of API access and can provide them to your team upon request.</p> <h2>Request Lifecycle</h2> <p>The API delivers data asynchronously using a request-and-poll pattern:</p> <ol>
+      <li><strong>Submit your request</strong> — Call the endpoint with your desired parameters. You'll receive a <code>request_id</code> and a <code>status</code> of <code>in_progress</code>.</li>
+      <li><strong>Poll for results</strong> — Call <code>/results/{request_id}</code> every 2–5 seconds until <code>status</code> changes to <code>completed</code> (or <code>error</code>).</li>
+      <li><strong>Download your data</strong> — When complete, the response includes a <code>download_url</code> containing a JSON array of objects matching the model defined below.</li>
+    </ol> <p>Most requests complete within a few seconds.</p> <h2>Testing</h2> <p>You can use the tools below to see responses from the API to understand how to build your own implementation.</p> <p>You will see the URLs and paths necessary to make your own API calls.</p> <ol>
+      <li>Click the Authorize button below to enter in your API Key in the following format: <code>Bearer API_TOKEN</code></li>
+      <li>After authorized, you can click the close button in the authorization modal to start making requests</li>
+      <li>Expand the Event Registration section below to see the available parameters that you can leverage to filter API results.</li>
+      <li>After requesting a subset of gifts, you will receive a <code>request_id</code>.  Copy that ID and then use that in the <code>results</code> section to see the progress of your request and to see the download URL once the request is completed.</li>
+    </ol> <p>In the routes section below, there is a "Try it out" button.  After authenticating, you can select from the available parameters, and you will see the curl request performed, the results of your request, and any errors if applicable.</p> <p><i>GiveCampus Proprietary and Confidential</i></p>
+basePath: "/api"
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Enter the token with the `Bearer ` prefix, e.g. "Bearer XXXXXXXXXXXXX".
+paths:
+  "/event_registrations":
+    get:
+      tags:
+      - Event Registrations for Your Institution
+      summary: Find your event registrations
+      description: |-
+        <p>This endpoint will submit a request to retrieve event registrations based on the supplied parameters.</p> <p>The results of this request is a JSON object that contains the following:</p>
+          <ol>
+            <li>request_id</li>
+            <li>state</li>
+            <li>payment_state</li>
+            <li>event_id</li>
+            <li>deposit_id</li>
+          </ol>
+        <p>Once you receive the <code>request_id</code>, you can make a subsequent request to the <code>results</code> operation listed on this page.</p> <p>You will take this id to check the <code>state</code> of the request and once it is <code>completed</code> you will have a valid <code>download_url</code> that will contain the data from the original event registrations request</p> <p><b>Important Notes:</b></p> <ul>
+          <li>By default, the start parameters filter on when event registrations got updated (i.e., updated_at).</li>
+          <li>You can provide an optional time_field string parameter to filter on one the following timestamps instead: completed_at, created_at, captured_at, deposited_at, updated_at</li>
+      operationId: findEventRegistrations
+      produces:
+      - application/json
+      parameters:
+      - name: state
+        in: query
+        description: Optionally filters registrations by their current status
+        required: false
+        type: string
+        enum:
+        - complete
+        - incomplete
+        - payment_processing
+        - payment_failed
+      - name: start
+        in: query
+        description: Start timestamp of the desired time range (Unix time in seconds)
+        required: false
+        type: integer
+      - name: end
+        in: query
+        description: End timestamp of the desired time range (Unix time in seconds)
+        required: false
+        type: integer
+      - name: time_field
+        in: query
+        description: Optional field to change by what field the start and end date
+          will filter
+        required: false
+        type: string
+        enum:
+        - completed_at
+        - captured_at
+        - deposited_at
+        - created_at
+        - updated_at
+      - name: payment_state
+        in: query
+        description: Optionally filters registrations by their payment status
+        required: false
+        type: string
+        enum:
+        - paid
+        - authorized
+        - partially_refunded
+      - name: ids
+        in: query
+        description: A comma-separated list of EventRegistration IDs to filter registrations
+          by.
+        type: string
+      - name: event_ids
+        in: query
+        description: A comma-separated list of Event IDs to filter registrations by.
+        type: string
+      - name: deposit_ids
+        in: query
+        description: A comma-separated list of Stripe/PayPal Deposit IDs to filter
+          registrations by.
+        type: string
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a request id that can be used to make further requests
+          schema:
+            "$ref": "#/definitions/ApiRequest"
+        '400':
+          description: Invalid request
+  "/events/{id}/registrations":
+    get:
+      tags:
+      - Event Registrations for Event
+      summary: Find your event registrations
+      description: |-
+        <p>This endpoint will submit a request to retrieve event registrations based on the supplied parameters.</p> <p>The results of this request is a JSON object that contains the following:</p>
+          <ol>
+            <li>request_id</li>
+            <li>state</li>
+            <li>payment_state</li>
+            <li>deposit_ids</li>
+          </ol>
+        <p>Once you receive the <code>request_id</code>, you can make a subsequent request to the <code>results</code> operation listed on this page.</p> <p>You will take this id to check the <code>state</code> of the request and once it is <code>completed</code> you will have a valid <code>download_url</code> that will contain the data from the original event registrations request</p> <p><b>Important Notes:</b></p>
+      operationId: findEventRegistrations
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: integer
+      - name: state
+        in: query
+        description: Optionally filters registrations by their current status
+        required: false
+        type: string
+        enum:
+        - complete
+        - incomplete
+        - payment_processing
+        - payment_failed
+      - name: payment_state
+        in: query
+        description: Optionally filters registrations by their payment status
+        required: false
+        type: string
+        enum:
+        - paid
+        - authorized
+        - partially_refunded
+      - name: deposit_ids
+        in: query
+        description: A comma-separated list of Stripe/PayPal Deposit IDs to filter
+          registrations by.
+        type: string
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a request id that can be used to make further requests
+          schema:
+            "$ref": "#/definitions/ApiRequest"
+        '400':
+          description: Invalid request
+  "/results/{request_id}":
+    get:
+      tags:
+      - Results
+      summary: Get your results
+      description: Returns the results of your request, like gifts
+      operationId: findResults
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+        required: true
+        description: Request ID
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a status and download url for your request
+          schema:
+            "$ref": "#/definitions/ApiResults"
+        '202':
+          description: returns a status for your request
+          schema:
+            "$ref": "../shared/types/in_progress_api_results.yaml"
+        '400':
+          description: Invalid request
+definitions:
+  EventRegistration:
+    description: The following fields are returned per event registration in an array
+      in the downloaded file from the Event Registrations API
+    type: object
+    properties:
+      event:
+        description: Event associated with the registration.
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the event.
+            type: integer
+          name:
+            description: event name.
+            type: string
+      add_ons:
+        type: array
+        items:
+          type: object
+          properties:
+            custom_fields:
+              description: Responses for custom form fields configured for the add-on.
+              type: array
+              items:
+                type: object
+                properties:
+                  report_column:
+                    description: The report column name for the form field.
+                    type: string
+                  value:
+                    description: The user-entered value for the form field.
+                    type: string
+            description:
+              description: A user-friendly description for the add-on.
+              type: string
+            fair_market_value:
+              description: The fair market value of the add-on.
+              type: string
+            name:
+              description: A user-friendly name for the add-on.
+              type: string
+            price:
+              description: Price for the add-on.
+              type: string
+            quantity:
+              description: Number of units of this add-on selected by the user.
+              type: string
+            state:
+              description: |
+                The state of the user's add-on registration:
+                 * incomplete - Registrant selected the add-on but has not yet completed their add-on registration
+                 * complete - Registrant has successfully signed up for the add-on
+                 * canceled - The add-on has been canceled and is no longer available to the registrant
+                 * removed - The add-on selection has been removed by an admin
+                 * reserved - The add-on is actively in the registrant's cart and unavailable to other users
+                 * rsvp_no - The registrant responded RSVP No to the event
+              type: string
+              enum:
+              - incomplete
+              - complete
+              - canceled
+              - removed
+              - reserved
+              - rsvp_no
+      additional_registrations:
+        description: 'For initial registrations, this field contains an array of any
+          additional registrations (edits) that have been made to the original registration.
+          This allows API consumers to see the full edit history from the initial
+          registration. Returns null for edited registrations or registrations without
+          a group.
+
+          '
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              description: GiveCampus ID for the additional registration.
+              type: integer
+            state:
+              description: The state of the additional registration.
+              type: string
+            timestamps:
+              type: object
+              properties:
+                created_at:
+                  description: Timestamp when the additional registration was created
+                    in Unix time.
+                  type: integer
+                completed_at:
+                  description: Timestamp when the additional registration was completed
+                    in Unix time.
+                  type: integer
+                updated_at:
+                  description: Timestamp when the additional registration was last
+                    updated in Unix time.
+                  type: integer
+                last_modified_by_registrant_at:
+                  description: Timestamp when the registrant last modified this registration
+                    in Unix time.
+                  type: integer
+      affiliations:
+        description: Affiliations selected by the registrant for themselves.
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              description: GiveCampus ID for the affiliation.
+              type: integer
+            name:
+              description: Reporting column name for the affiliation.
+              type: string
+            values:
+              description: Affiliation values selected by the registrant.
+              type: array
+      anonymous:
+        description: True if the registrant has chosen to be anonymous.
+        type: boolean
+      attendees:
+        description: Information about attendees associated with the registration.
+        type: array
+        items:
+          type: object
+          properties:
+            activities:
+              description: A list of activities that the attendee is signed up for.
+              type: array
+              items:
+                type: object
+                properties:
+                  custom_fields:
+                    description: Guest-level responses to form fields configured for
+                      the activity.
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        report_column:
+                          description: The report column name for the form field.
+                          type: string
+                        value:
+                          description: The user-entered value for the form field.
+                          type: string
+                  id:
+                    description: GiveCampus ID for the activity.
+                    type: integer
+                  name:
+                    description: Name of the activity.
+                    type: string
+                  state:
+                    description: |
+                      The current state of the activity.
+                        * active - The activity is live and attendees can sign up for it)
+                        * canceled - The activity has been canceled and can no longer be selected during registration
+                    type: string
+                    enum:
+                    - active
+                    - canceled
+                  ticket_type:
+                    description: Information about the activity ticket type that the
+                      attendee has signed up for.
+                    type: object
+                    properties:
+                      fair_market_value:
+                        description: Fair market value of the ticket price.
+                        type: string
+                      id:
+                        description: GiveCampus ID for the ticket type.
+                        type: integer
+                      name:
+                        description: Name of the ticket type.
+                        type: string
+                      price:
+                        description: Price per ticket.
+                        type: string
+                  ticket:
+                    description: Information about the attendee's ticket for this
+                      activity.
+                    type: object
+                    properties:
+                      id:
+                        description: GiveCampus ID for the ticket.
+                        type: integer
+                      rsvp_state:
+                        description: The RSVP status of the ticket.
+                        type: string
+                        enum:
+                        - attending
+                        - not_attending
+                      state:
+                        description: |
+                          The current state of the ticket:
+                            * incomplete - Attendee selected the activity but has not yet completed their registration
+                            * complete - Attendee has successfully signed up for the activity
+                            * canceled - The ticket has been canceled
+                            * removed - The activity ticket has been removed by an admin
+                            * reserved - The ticket is actively in the registrant's cart
+                        type: string
+                        enum:
+                        - incomplete
+                        - complete
+                        - canceled
+                        - removed
+                        - reserved
+                  timestamps:
+                    type: object
+                    properties:
+                      checked_in_at:
+                        description: Timestamp when the attendee checked in to the
+                          activity in Unix time.
+                        type: integer
+            affiliations:
+              description: Affiliation selections for the attendee.
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    description: GiveCampus ID for the affiliation.
+                    type: integer
+                  name:
+                    description: Reporting column name for the affiliation.
+                    type: string
+                  values:
+                    description: Affiliation values associated with the attendee.
+                    type: array
+            checked_in:
+              description: True if the attendee has checked in to the event.
+              type: boolean
+            constituent_id:
+              description: Constituent identifier for the registrant.
+              type: string
+            constituent_ids:
+              description: Constituent identifiers for the registrant.
+              type: array
+            custom_fields:
+              description: Responses for custom form fields configured on the guest
+                form
+              type: array
+              items:
+                type: object
+                properties:
+                  report_column:
+                    description: The report column name for the form field.
+                    type: string
+                  value:
+                    description: The user-entered value for the form field.
+                    type: string
+            email:
+              description: The attendee's email address.
+              type: string
+            first_name:
+              description: The attendee's first name.
+              type: string
+            id:
+              description: GiveCampus ID for the attendee.
+              type: integer
+            last_name:
+              description: The attendee's last name.
+              type: string
+            rsvp_state:
+              description: The attendee's RSVP status.
+              type: string
+              enum:
+              - attending
+              - not_attending
+            ticket:
+              description: Information about the attendee's event ticket.
+              type: object
+              properties:
+                id:
+                  description: GiveCampus ID for the ticket.
+                  type: integer
+                rsvp_state:
+                  description: The RSVP status of the ticket.
+                  type: string
+                  enum:
+                  - attending
+                  - not_attending
+                state:
+                  description: |
+                    The current state of the ticket:
+                      * incomplete - Attendee's ticket registration is not yet complete
+                      * complete - Attendee has successfully registered for the event
+                      * canceled - The ticket has been canceled
+                      * removed - The ticket has been removed by an admin
+                      * reserved - The ticket is actively in the registrant's cart
+                  type: string
+                  enum:
+                  - incomplete
+                  - complete
+                  - canceled
+                  - removed
+                  - reserved
+            ticket_type:
+              type: object
+              properties:
+                fair_market_value:
+                  description: Information about the ticket type selected for the
+                    attendee.
+                  type: string
+                id:
+                  description: GiveCampus ID for the ticket type.
+                  type: integer
+                name:
+                  description: Name of the ticket type.
+                  type: string
+                price:
+                  description: Price per ticket.
+                  type: string
+            timestamps:
+              type: object
+              properties:
+                checked_in_at:
+                  description: Timestamp when the attendee checked in to the event
+                    in Unix time.
+                  type: integer
+      custom_fields:
+        description: Responses for custom form fields configured on the registrant
+          form
+        type: array
+        items:
+          type: object
+          properties:
+            report_column:
+              description: The report column name for the form field.
+              type: string
+            value:
+              description: The user-entered value for the form field.
+              type: string
+      constituent_id:
+        description: Constituent identifier for the registrant.
+        type: string
+      constituent_ids:
+        description: Constituent identifiers for the registrant.
+        type: array
+      donations:
+        description: Donations associated with the registration
+        type: array
+        items:
+          type: object
+          properties:
+            amount:
+              description: The value of the donation.
+              type: integer
+            currency:
+              description: 'Donation currency. Examples: "USD", "GBP"'
+              type: string
+            id:
+              description: GiveCampus ID for the donation.
+              type: integer
+      email:
+        description: The registrant's email address.
+        type: string
+      first_name:
+        description: The registrant's first name.
+        type: string
+      gift_amount:
+        description: The gift amount chosen by the registrant.
+        type: string
+      id:
+        description: GiveCampus ID for the registration.
+        type: integer
+      initial_registration:
+        description: 'For edited registrations (additional registrations created when
+          a registrant modifies their original registration), this field contains
+          information about the initial/original registration. This allows API consumers
+          to link edited registrations back to the original attendee. Returns null
+          for initial registrations or registrations without a group.
+
+          '
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the initial registration.
+            type: integer
+          state:
+            description: The state of the initial registration.
+            type: string
+          timestamps:
+            type: object
+            properties:
+              created_at:
+                description: Timestamp when the initial registration was created in
+                  Unix time.
+                type: integer
+              completed_at:
+                description: Timestamp when the initial registration was completed
+                  in Unix time.
+                type: integer
+              updated_at:
+                description: Timestamp when the initial registration was last updated
+                  in Unix time.
+                type: integer
+              last_modified_by_registrant_at:
+                description: Timestamp when the registrant last modified the initial
+                  registration in Unix time.
+                type: integer
+      last_name:
+        description: The registrant's last name.
+        type: string
+      note:
+        description: A note left by an admin about the registrant.
+        type: string
+      offline:
+        description: True if the registration was uploaded and created offline.
+        type: boolean
+      payment:
+        description: Payment information associated with the registration.
+        type: object
+        properties:
+          amount:
+            description: The payment amount.
+            type: string
+          currency:
+            description: Payment currency.
+            type: string
+          deposit_id:
+            description: GiveCampus deposit ID for the payment.
+            type: integer
+          external_deposit_id:
+            description: Stripe/PayPal deposit ID for the payment.
+            type: string
+          failure_reason:
+            description: User-friendly reason for payment failure.
+            type: string
+          id:
+            description: GiveCampus ID for the payment.
+            type: string
+          payment_method:
+            description: 'The payment method used by the registrant. Examples: "Visa",
+              "Discover", "Venmo"'
+            type: string
+          state:
+            description: |
+              The payment state.
+                * paid - Registrant was charged successfully and the amount has been deposited into your bank account
+                * authorized - Registrant was charged successfully but deposit is pending
+                * pending - Registrant has not been charged yet
+                * requires_action - The payment requires admin action
+                * failed - The charge did not complete successfully
+                * refunded - The payment was refunded
+                * partially_refunded - The payment was partially refunded
+                * disputed - The payment is being disputed by the registrant
+                * charged_back - The payment was successfully charged back by the registrant
+            type: string
+            enum:
+            - paid
+            - authorized
+            - pending
+            - requires_action
+            - failed
+            - refunded
+            - partially_refunded
+            - disputed
+            - charged_back
+          timestamps:
+            type: object
+            properties:
+              captured_at:
+                description: Payment capture timestamp in Unix time. This represents
+                  the payment success confirmation from Stripe/PayPal.
+                type: integer
+              created_at:
+                description: Payment creation timestamp in Unix time i.e. time we
+                  recorded the payment attempt in GiveCampus
+                type: integer
+              deposited_at:
+                description: Deposit confirmation timestamp from Stripe/PayPal in
+                  Unix time.
+                type: integer
+          type:
+            description: 'Payment processor type. Examples: "Stripe", "PayPal", "Venmo"'
+            type: string
+      promo_code:
+        description: Information about the promo code entered by the registrant.
+        type: object
+        properties:
+          applies_to_add_ons_and_activities:
+            description: Indicates whether event add-ons and activities are included
+              in the promo code discount.
+            type: boolean
+          code:
+            description: The code that the registrant must enter to receive the discount.
+            type: string
+          discount:
+            type: object
+            properties:
+              amount:
+                description: The discount amount for the promo code.
+                type: string
+              applied:
+                description: Promo code discount applied to the registration.
+                type: string
+              type:
+                description: 'The type of discount. Examples: "percentage", "dollar"'
+                type: string
+          id:
+            description: GiveCampus ID for the promo code.
+            type: integer
+      refunds:
+        description: Refunds associated with the registration payment.
+        type: array
+        items:
+          type: object
+          properties:
+            amount:
+              description: The refund amount.
+              type: integer
+            deposit_id:
+              description: GiveCampus deposit ID for the refund.
+              type: string
+            external_deposit_id:
+              description: Stripe/PayPal deposit ID for the refund.
+              type: string
+            id:
+              description: GiveCampus ID for the refund.
+              type: string
+            payment_id:
+              description: GiveCampus ID for the relevant payment.
+              type: string
+            reason:
+              description: User-friendly reason for the refund.
+              type: string
+            state:
+              description: |
+                The refund state.
+                  * succeeded - The refund was successful and funds have been returned to the user
+                  * canceled - The refund was canceled
+                  * pending - The refund is pending and has not failed or succeeded yet
+                  * failed - The refund failed
+                  * requires_action - The refund requires further action from the admin or user
+              type: string
+              enum:
+              - succeeded
+              - canceled
+              - pending
+              - failed
+              - requires_action
+            timestamps:
+              type: object
+              properties:
+                created_at:
+                  description: Creation timestamp of the refund in Unix time
+                  type: integer
+                refunded_at:
+                  description: Confirmation timestamp for the refund in Unix time
+                  type: integer
+                deposited_at:
+                  description: Deposit confirmation timestamp from Stripe/PayPal in
+                    Unix time.
+                  type: integer
+      registration_type:
+        description: |
+          Indicates how the registration was created.
+            * user - The registration was created by the registrant through the public registration form
+            * admin - The registration was created by an admin on behalf of the registrant
+            * offline - The registration was created via an offline data import
+        type: string
+        enum:
+        - user
+        - admin
+        - offline
+      state:
+        description: |
+          The registration state.
+            * started - The registrant has provided their information and initiated the registration process
+            * guests - The registrant is on the Guests step where they enter information about their guests
+            * activities - The registrant is on the Activities step, selecting which event activities they'd like to attend
+            * add_ons - The registrant is selecting Add-Ons
+            * review - The registrant is shown a summary of their registration details before they confirm and complete the process
+            * payment_processing - The payment is processing but has not failed or succeeded yet
+            * payment_failed - The payment was unsuccessful
+            * complete - The registration has been completed successfully
+            * preview - The registration was created in admin preview mode
+        type: string
+        enum:
+        - started
+        - guests
+        - activities
+        - add_ons
+        - review
+        - payment_processing
+        - payment_failed
+        - completed
+        - preview
+      unique_tracking_link:
+        description: If a registrant was created from a unique tracking link, it will
+          be included here.
+        type: object
+        properties:
+          description:
+            description: A user-friendly description of the tracking link.
+            type: string
+          id:
+            description: GiveCampus ID for the tracking link.
+            type: integer
+          link:
+            description: The tracking link URL.
+            type: string
+          title:
+            description: A user-friendly title for the tracking link.
+            type: string
+      timestamps:
+        type: object
+        properties:
+          completed_at:
+            description: Timestamp when the registrant completed their registration
+              in Unix time.
+            type: integer
+          created_at:
+            description: Timestamp when the registration was created in Unix time.
+            type: integer
+          invited_from_waitlist_at:
+            description: Timestamp when the registrant was invited from the waitlist
+              in Unix time.
+            type: integer
+          last_modified_by_registrant_at:
+            description: Timestamp when the registrant last modified their registration
+              (after completion) in Unix time.
+            type: integer
+          registration_last_modified_at:
+            description: Timestamp of the most recent modification to the registration
+              or any of its related records (attendees, tickets, affiliations, add-ons,
+              form responses, payment) in Unix time. For registrations in a group,
+              this reflects the most recent update across all registrations in the
+              group.
+            type: integer
+          joined_waitlist_at:
+            description: Timestamp when the registrant joined the waitlist in Unix
+              time.
+            type: integer
+          rsvp_no_at:
+            description: Timestamp when the registrant RSVP'd 'No' to the event in
+              Unix time.
+            type: integer
+      ticket_fmv_designation:
+        description: 'Note: This field is not included in the registrations API response
+          by default.'
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the ticket fair market value designation
+            type: string
+          name:
+            description: Name of the ticket fair market value designation
+            type: string
+          unique_identifier:
+            description: Optional backend identifier for the ticket fair market value
+              designation
+            type: string
+      ticket_gift_designation:
+        description: 'Note: This field is not included in the registrations API response
+          by default.'
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the ticket gift designation
+            type: string
+          name:
+            description: Name of the ticket gift designation
+            type: string
+          unique_identifier:
+            description: Optional backend identifier for the ticket gift designation
+            type: string
+      total_ticket_fmv:
+        description: Total fair market value of tickets sold
+        type: string
+      total_ticket_gift:
+        description: Total gift value of tickets sold. Computed as the difference
+          between the ticket price and the fair market value.
+        type: string
+      user:
+        description: User registered
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the user
+            type: integer
+          name:
+            description: Name of the registrant
+            type: string
+  ApiRequest:
+    "$ref": "../shared/types/api_request.yaml"
+  ApiResults:
+    "$ref": "../shared/types/api_results.yaml"

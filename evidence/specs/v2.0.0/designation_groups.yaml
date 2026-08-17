@@ -1,0 +1,388 @@
+---
+swagger: '2.0'
+info:
+  version: 2.0.0
+  title: GiveCampus Designation Groups API V2
+  description: |-
+    The Designation Groups API allows your school to securely retrieve and manage designation group data in JSON format. A designation group is a <strong>tree</strong> of nodes: a school-level root group can contain child groups and individual designations, nested up to 10 levels deep. <h2>Security</h2> <p>Every API request must have a bearer token attached in the Authorization header.</p> <p>These tokens are generated within the GiveCampus UI and only school administrators with super-user permissions can generate and manage them. You will choose this initial set of “full” administrators during the GiveCampus onboarding process.</p> <p>All API responses will be delivered over a secure HTTPS connection, and a TLS version of 1.2 or 1.3 is required.</p> <p>GiveCampus maintains detailed logs of API access and can provide them to your team upon request.</p> <h2>Request Lifecycle</h2> <p>The API delivers data asynchronously using a request-and-poll pattern:</p> <ol>
+      <li><strong>Submit your request</strong> — Call the endpoint with your desired parameters. You'll receive a <code>request_id</code> and a <code>status</code> of <code>in_progress</code>.</li>
+      <li><strong>Poll for results</strong> — Call <code>/results/{request_id}</code> every 2–5 seconds until <code>status</code> changes to <code>completed</code> (or <code>error</code>).</li>
+      <li><strong>Download your data</strong> — When complete, the response includes a <code>download_url</code> containing a JSON array of objects matching the model defined below.</li>
+    </ol> <p>Most requests complete within a few seconds.</p> <h2>The tree-based workflow (read → modify → write)</h2> <p>Updating a designation group is a <strong>full-state reconciliation</strong> of one root group's tree. Rather than sending individual add/edit/remove operations, you send the entire desired shape of the tree and GiveCampus reconciles the stored tree to match it. The recommended workflow is:</p> <ol>
+      <li><strong>GET the current tree</strong> — Call <code>GET /designation_groups</code> and download the results. Each item is a root group with its full nested <code>children</code> array. Every node includes its <code>id</code>.</li>
+      <li><strong>Modify the tree locally</strong> — Edit node attributes, add new child nodes, remove nodes, or restructure the hierarchy in the JSON you downloaded. See "Node identity semantics" below for exactly how each change is interpreted.</li>
+      <li><strong>PUT the desired state</strong> — Call <code>PUT /designation_groups</code> with the modified tree(s). GiveCampus updates, creates, and soft-deletes nodes as needed so the stored tree matches what you submitted.</li>
+    </ol> <h2>Node identity semantics</h2> <p>On a <code>PUT</code>, each node's <code>id</code> field determines what happens to it:</p> <ul>
+      <li><strong>Node <em>with</em> an <code>id</code></strong> → <strong>updated</strong>. The <code>id</code> must belong to the subtree of the root group being submitted. Only attributes that actually changed are written.</li>
+      <li><strong>Node <em>without</em> an <code>id</code></strong> → <strong>created</strong> as a new node under its parent.</li>
+      <li><strong>An existing node that is <em>absent</em> from the submission</strong> → <strong>soft-deleted</strong>. Any node currently stored in the submitted root's subtree that you do not include is removed (along with its descendants).</li>
+    </ul> <h2>Create mode (POST) vs. update mode (PUT)</h2> <ul>
+      <li><strong>POST builds a brand-new tree.</strong> No node may include an <code>id</code> field — every node is created. Submitting an <code>id</code> is rejected.</li>
+      <li><strong>PUT reconciles an existing tree.</strong> The top-level <code>id</code> identifies the existing root group to reconcile and is required. Within that subtree, node identity semantics (above) apply.</li>
+    </ul> <h2>Omitted root-level groups are left untouched</h2> <p>Reconciliation is scoped to <strong>only the root groups you submit</strong>. The <code>PUT</code> body is an array, and each element reconciles its own root group's subtree independently. Any root-level designation group that you do <strong>not</strong> include in the request is left entirely untouched — the absence rule (soft-delete) applies only <em>within</em> the subtree of a root group you actually submit, never across root groups you omit.</p> <h2>Nodes that are in use</h2> <p>If a node is currently in use by a campaign or giving form, it is protected:</p> <ul>
+      <li>It cannot be soft-deleted (you cannot remove it from the tree, and the root group cannot be deleted via <code>DELETE</code>).</li>
+      <li>Only <code>priority</code>, <code>visible</code>, and <code>position</code> may be edited. Changing any other attribute (e.g. <code>name</code>, <code>designation_id</code>, or moving it to a new parent) is rejected.</li>
+    </ul> <h2>Testing</h2> <p>You can use the tools below to see responses from the API to understand how to build your own implementation.</p> <p>You will see the URLs and paths necessary to make your own API calls.</p> <ol>
+      <li>Click the Authorize button below to enter in your API Key in the following format: <code>Bearer API_TOKEN</code></li>
+      <li>After authorized, you can click the close button in the authorization modal to start making requests</li>
+      <li>Expand the Designation Groups section below to see the available parameters that you can leverage to filter API results.</li>
+      <li>After requesting a subset of designation groups, you will receive a <code>request_id</code>.  Copy that ID and then use that in the <code>results</code> section to see the progress of your request and to see the download URL once the request is completed.</li>
+    </ol> <p>In the routes section below, there is a "Try it out" button.  After authenticating, you can select from the available parameters, and you will see the curl request performed, the results of your request, and any errors if applicable.</p> <p><i>GiveCampus Proprietary and Confidential</i></p>
+basePath: "/api/v2"
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Enter the token with the `Bearer ` prefix, e.g. "Bearer XXXXXXXXXXXXX".
+paths:
+  "/designation_groups":
+    get:
+      tags:
+      - Retrieve the current designation group trees
+      summary: Find your designation groups
+      description: |-
+        <p>This endpoint will submit a request to retrieve your school's designation group trees.</p> <p>The results of this request is a JSON object that contains the following:</p>
+          <ol>
+            <li>request_id</li>
+            <li>state</li>
+          </ol>
+        <p>Once you receive the <code>request_id</code>, you can make a subsequent request to the <code>results</code> operation listed on this page.</p> <p>You will take this id to check the <code>state</code> of the request and once it is <code>completed</code> you will have a valid <code>download_url</code> that will contain the data from the original designation groups request.</p> <p>Each item in the downloaded array is a root group with its full nested <code>children</code> tree, and every node includes its <code>id</code>. This is the starting point for the read → modify → write workflow described above.</p>
+      operationId: findDesignationGroups
+      produces:
+      - application/json
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a request id that can be used to make further requests
+          schema:
+            "$ref": "#/definitions/ApiRequest"
+        '400':
+          description: Invalid request
+          schema:
+            "$ref": "./types/bad_request_error.yaml"
+        '401':
+          description: Unauthorized
+          schema:
+            "$ref": "./types/unauthorized_error.yaml"
+        '500':
+          description: Internal Server Error
+          schema:
+            "$ref": "./types/internal_server_error.yaml"
+    post:
+      tags:
+      - Create a new designation group tree
+      summary: Create designation groups
+      description: |-
+        <p>This endpoint creates a brand-new designation group tree from a root group.</p> <p><strong>Create mode:</strong> No node may include an <code>id</code> field — every node in the submitted tree is created. Including an <code>id</code> is rejected with an <code>invalid_data</code> error.</p> <p>
+          <strong>IMPORTANT: Submitting this request will create real designation groups for your school such that anyone reviewing designation groups will see them in the GiveCampus system.</strong>
+        </p> <p>
+          <strong>Please ensure that your team is aware of any API requests submitted using this tool, and can delete after testing.</strong>
+        </p> <p><strong>Note:</strong> You can only create up to 5,000 designation groups per request, and a tree may be nested at most 10 levels deep.</p>
+      operationId: createDesignationGroups
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Designation Groups Details
+        schema:
+          type: array
+          items:
+            "$ref": "#/definitions/DesignationGroupNodeInput"
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a request id that can be used to make further requests
+          schema:
+            "$ref": "#/definitions/ApiRequest"
+        '400':
+          description: Invalid request
+          schema:
+            "$ref": "./types/bad_request_error.yaml"
+        '401':
+          description: Unauthorized
+          schema:
+            "$ref": "./types/unauthorized_error.yaml"
+        '500':
+          description: Internal Server Error
+          schema:
+            "$ref": "./types/internal_server_error.yaml"
+    put:
+      tags:
+      - Reconcile an existing designation group tree
+      summary: Update designation groups
+      description: |-
+        <p>This endpoint reconciles an existing designation group tree to match the desired state you submit. Submit the entire tree for each root group you want to change.</p> <p><strong>Update mode &amp; node identity:</strong></p> <ul>
+          <li>The top-level <code>id</code> identifies the existing root group to reconcile and is <strong>required</strong>.</li>
+          <li>A node <strong>with</strong> an <code>id</code> is <strong>updated</strong> (the <code>id</code> must already belong to that root's subtree).</li>
+          <li>A node <strong>without</strong> an <code>id</code> is <strong>created</strong> under its parent.</li>
+          <li>An existing node that is <strong>absent</strong> from the submitted subtree is <strong>soft-deleted</strong>.</li>
+        </ul> <p><strong>Omitted root groups are left untouched:</strong> each array element reconciles only its own root group's subtree. Root groups you do not include in the request are not modified.</p> <p><strong>In-use protection:</strong> nodes currently used by a campaign or giving form cannot be removed, and only <code>priority</code>, <code>visible</code>, and <code>position</code> may be changed on them.</p> <p><strong>Note:</strong> You can update up to 5,000 designation groups per request, a tree may be nested at most 10 levels deep, and a node <code>id</code> may not appear more than once in a single submission.</p>
+      operationId: updateDesignationGroups
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Designation Groups Details
+        schema:
+          type: array
+          items:
+            "$ref": "#/definitions/DesignationGroupNodeUpdate"
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a request id that can be used to make further requests
+          schema:
+            "$ref": "#/definitions/ApiRequest"
+        '400':
+          description: Invalid request
+          schema:
+            "$ref": "./types/bad_request_error.yaml"
+        '401':
+          description: Unauthorized
+          schema:
+            "$ref": "./types/unauthorized_error.yaml"
+        '500':
+          description: Internal Server Error
+          schema:
+            "$ref": "./types/internal_server_error.yaml"
+    delete:
+      tags:
+      - Delete a designation group tree
+      summary: Delete designation groups
+      description: |-
+        <p>This endpoint soft-deletes an entire designation group tree, including all of its descendant nodes.</p> <p><strong>Restrictions:</strong></p> <ul>
+          <li>The <code>id</code> must be a <strong>school-level root node</strong> — it cannot have a parent group or be tied directly to a project.</li>
+          <li>The delete is rejected if <strong>any</strong> node within the subtree is in use by a campaign or giving form.</li>
+        </ul> <p>On success, each item in the response contains only the deleted root group's <code>id</code>.</p>
+      operationId: deleteDesignationGroups
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Designation Groups Details
+        schema:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            properties:
+              id:
+                example: 100
+                description: GiveCampus ID of the school-level root designation group
+                  to delete.
+                type: integer
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a request id that can be used to make further requests
+          schema:
+            "$ref": "#/definitions/ApiRequest"
+        '400':
+          description: Invalid request
+          schema:
+            "$ref": "./types/bad_request_error.yaml"
+        '401':
+          description: Unauthorized
+          schema:
+            "$ref": "./types/unauthorized_error.yaml"
+        '500':
+          description: Internal Server Error
+          schema:
+            "$ref": "./types/internal_server_error.yaml"
+  "/results/{request_id}":
+    get:
+      tags:
+      - Results
+      summary: Get your results
+      description: Returns the results of your request, like designation groups
+      operationId: findResults
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+        required: true
+        description: Request ID
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a status and download url for your request
+          schema:
+            "$ref": "#/definitions/ApiResults"
+        '202':
+          description: returns a status for your request
+          schema:
+            "$ref": "../shared/types/in_progress_api_results.yaml"
+        '401':
+          description: Unauthorized
+          schema:
+            "$ref": "./types/unauthorized_error.yaml"
+        '404':
+          description: Not Found
+          schema:
+            "$ref": "./types/not_found_error.yaml"
+        '500':
+          description: Internal Server Error
+          schema:
+            "$ref": "./types/internal_server_error.yaml"
+definitions:
+  DesignationGroupNodeInput:
+    type: object
+    description: 'A node in a designation group tree submitted on create (POST). A
+      node is either a <strong>group</strong> (<code>group: true</code>) that can
+      contain <code>children</code>, or a <strong>leaf</strong> (<code>group: false</code>)
+      that points at a single designation via <code>designation_id</code>. Do not
+      include an <code>id</code> on create.'
+    properties:
+      name:
+        example: Annual Fund
+        description: Name of the node. Required for group nodes; optional for leaf
+          (designation) nodes.
+        type: string
+      description:
+        example: Group of annual giving designations
+        description: Optional description. Must be 255 characters or less.
+        type: string
+      designation_id:
+        example: 100
+        description: When <code>group</code> is <code>true</code>, the designation
+          assigned as the Program Priority for the group (optional). When <code>group</code>
+          is <code>false</code> (a leaf node), this is required and identifies the
+          designation included at this node. The designation must exist for your school
+          and be active (not hidden).
+        type: integer
+      group:
+        example: true
+        description: Set to <code>true</code> for a group node, <code>false</code>
+          for a leaf (single designation) node.
+        type: boolean
+      visible:
+        example: true
+        description: Whether the node is visible to donors. Defaults to <code>true</code>
+          when omitted.
+        type: boolean
+        default: true
+      priority:
+        example: false
+        description: Whether this node is highlighted on the pre-payment form. Defaults
+          to <code>false</code> when omitted.
+        type: boolean
+        default: false
+      position:
+        example: 0
+        description: Optional ordering position of the node among its siblings.
+        type: integer
+      children:
+        description: Array of child nodes nested under this group. Only valid when
+          <code>group</code> is <code>true</code>. Each child has the same shape as
+          this object. Trees may be nested at most 10 levels deep.
+        type: array
+        items:
+          "$ref": "#/definitions/DesignationGroupNodeInput"
+    required:
+    - group
+  DesignationGroupNodeUpdate:
+    type: object
+    description: 'A node in a designation group tree submitted on update (PUT). Identical
+      to the create shape, except an <code>id</code> may be present: a node with an
+      <code>id</code> is updated, a node without an <code>id</code> is created, and
+      any existing node omitted from the submission is soft-deleted. The top-level
+      (root) node''s <code>id</code> is required.'
+    properties:
+      id:
+        example: 100
+        description: GiveCampus ID of an existing node to update. Required on the
+          top-level root node. Omit on a node to create it. When present on a child,
+          the id must already belong to this root group's subtree.
+        type: integer
+      name:
+        example: Annual Fund
+        description: Name of the node. Required for group nodes; optional for leaf
+          (designation) nodes.
+        type: string
+      description:
+        example: Group of annual giving designations
+        description: Optional description. Must be 255 characters or less.
+        type: string
+      designation_id:
+        example: 100
+        description: When <code>group</code> is <code>true</code>, the designation
+          assigned as the Program Priority for the group (optional). When <code>group</code>
+          is <code>false</code> (a leaf node), this is required and identifies the
+          designation included at this node. The designation must exist for your school
+          and be active (not hidden).
+        type: integer
+      group:
+        example: true
+        description: Set to <code>true</code> for a group node, <code>false</code>
+          for a leaf (single designation) node.
+        type: boolean
+      visible:
+        example: true
+        description: Whether the node is visible to donors.
+        type: boolean
+      priority:
+        example: false
+        description: Whether this node is highlighted on the pre-payment form.
+        type: boolean
+      position:
+        example: 0
+        description: Optional ordering position of the node among its siblings.
+        type: integer
+      children:
+        description: Array of child nodes nested under this group. Only valid when
+          <code>group</code> is <code>true</code>. Each child has the same shape as
+          this object. Trees may be nested at most 10 levels deep.
+        type: array
+        items:
+          "$ref": "#/definitions/DesignationGroupNodeUpdate"
+  GetDesignationGroups:
+    description: The following fields are returned per designation group in an array
+      in the downloaded file from the Designation Groups API.  The results of each
+      node below the first level that can be associated to a designation group can
+      be either another designation group or a designation.  Each object in the <code>children</code>
+      array matches the object description below.
+    "$ref": "../v1.0.0/designation_group_object.yaml"
+  PostDesignationGroups:
+    description: The following fields are returned per designation group in an array
+      to confirm that the designation group tree was created. Rejected rows include
+      an `errors` array describing why they failed.
+    type: object
+    properties:
+      error_count:
+        description: If any errors, the number will be reported in this field.
+        type: integer
+      items:
+        description: The designation group trees created will be returned in an array
+          for review.
+        type: array
+        items:
+          "$ref": "../v1.0.0/designation_group_object.yaml"
+  PutDesignationGroups:
+    description: The following fields are returned per designation group in an array
+      to confirm that the designation group tree was reconciled. Rejected rows include
+      an `errors` array describing why they failed.
+    type: object
+    properties:
+      error_count:
+        description: If any errors, the number will be reported in this field.
+        type: integer
+      items:
+        description: The reconciled designation group trees will be returned in an
+          array for review.
+        type: array
+        items:
+          "$ref": "../v1.0.0/designation_group_object.yaml"
+  ApiRequest:
+    "$ref": "../shared/types/api_request.yaml"
+  ApiResults:
+    "$ref": "../shared/types/api_results.yaml"

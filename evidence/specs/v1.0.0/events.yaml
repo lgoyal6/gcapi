@@ -1,0 +1,647 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GiveCampus Events API
+  description: |-
+    The Events API allows your school to securely retrieve event data in JSON format. You can request a list of your school's events and filter these by their current state, start time, or end time. <h2>Security</h2> <p>Every API request must have a bearer token attached in the Authorization header.</p> <p>These tokens are generated within the GiveCampus UI and only school administrators with super-user permissions can generate and manage them. You will choose this initial set of “full” administrators during the GiveCampus onboarding process.</p> <p>All API responses will be delivered over a secure HTTPS connection, and a TLS version of 1.2 or 1.3 is required.</p> <p>GiveCampus maintains detailed logs of API access and can provide them to your team upon request.</p> <h2>Request Lifecycle</h2> <p>The API delivers data asynchronously using a request-and-poll pattern:</p> <ol>
+      <li><strong>Submit your request</strong> — Call the endpoint with your desired parameters. You'll receive a <code>request_id</code> and a <code>status</code> of <code>in_progress</code>.</li>
+      <li><strong>Poll for results</strong> — Call <code>/results/{request_id}</code> every 2–5 seconds until <code>status</code> changes to <code>completed</code> (or <code>error</code>).</li>
+      <li><strong>Download your data</strong> — When complete, the response includes a <code>download_url</code> containing a JSON array of objects matching the model defined below.</li>
+    </ol> <p>Most requests complete within a few seconds.</p> <h2>Testing</h2> <p>You can use the tools below to see responses from the API to understand how to build your own implementation.</p> <p>You will see the URLs and paths necessary to make your own API calls.</p> <ol>
+      <li>Click the Authorize button below to enter in your API Key in the following format: <code>Bearer API_TOKEN</code></li>
+      <li>After authorized, you can click the close button in the authorization modal to start making requests</li>
+      <li>Expand the Events section below to see the available parameters that you can leverage to filter API results.</li>
+      <li>After requesting a subset of events, you will receive a <code>request_id</code>.  Copy that ID and then use that in the <code>results</code> section to see the progress of your request and to see the download URL once the request is completed.</li>
+    </ol> <p>In the routes section below, there is a "Try it out" button.  After authenticating, you can select from the available parameters, and you will see the curl request performed, the results of your request, and any errors if applicable.</p> <p><i>GiveCampus Proprietary and Confidential</i></p>
+basePath: "/api"
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Enter the token with the `Bearer ` prefix, e.g. "Bearer XXXXXXXXXXXXX".
+paths:
+  "/events":
+    get:
+      tags:
+      - Events
+      summary: Find your events
+      description: |-
+        <p>This endpoint will submit a request to retrieve events based on the supplied parameters.</p> <p>The results of this request is a JSON object that contains the following:</p>
+          <ol>
+            <li>request_id</li>
+            <li>state</li>
+          </ol>
+        <p>Once you receive the <code>request_id</code>, you can make a subsequent request to the <code>results</code> operation listed on this page.</p> <p>You will take this id to check the <code>state</code> of the request and once it is <code>completed</code> you will have a valid <code>download_url</code> that will contain the data from the original events request</p>
+      operationId: findEvents
+      produces:
+      - application/json
+      parameters:
+      - name: state
+        in: query
+        description: State values
+        required: true
+        type: string
+        enum:
+        - draft
+        - active
+        - complete
+        default: active
+      - name: start
+        in: query
+        description: Start date (unix time)
+        required: false
+        type: integer
+      - name: end
+        in: query
+        description: End date (unix time)
+        required: false
+        type: integer
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a request id that can be used to make further requests
+          schema:
+            "$ref": "#/definitions/ApiRequest"
+        '400':
+          description: Invalid request
+  "/results/{request_id}":
+    get:
+      tags:
+      - Results
+      summary: Get your results
+      description: Returns the results of your request, like events
+      operationId: findResults
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+        required: true
+        description: Request ID
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a status and download url for your request
+          schema:
+            "$ref": "#/definitions/ApiResults"
+        '202':
+          description: returns a status for your request
+          schema:
+            "$ref": "../shared/types/in_progress_api_results.yaml"
+        '400':
+          description: Invalid request
+definitions:
+  Event:
+    description: The following fields are returned per event in an array in the downloaded
+      file from the Events API
+    type: object
+    properties:
+      activities:
+        description: A list of activities associated with the event. Registrants can
+          sign up for these in addition to their base ticket. Please note that activities
+          are only available for Complex Events.
+        type: array
+        items:
+          type: object
+          properties:
+            address_line1:
+              description: The street number and name for the location, if in-person.
+              type: string
+            address_line2:
+              description: Additional information for the location, if in-person.
+              type: string
+            address_city:
+              description: The city that the activity location is in.
+              type: string
+            address_state:
+              description: The state that the activity location is in.
+              type: string
+            address_zip:
+              description: The zipcode for the activity location.
+              type: string
+            affiliations:
+              description: A list of affiliations that are applicable for the activity
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    description: GiveCampus ID for the affiliation.
+                    type: integer
+                  label:
+                    description: Human-readable label for the affiliation.
+                    type: string
+                  name:
+                    description: 'Reporting column name for the affiliation. Examples:
+                      alumni, parent, language'
+                    type: string
+                  values:
+                    description: 'The appropriate types of the affiliation that are
+                      choosable for the affiliation. Examples: [''2009'', ''2010''],
+                      [''German'', ''French'']'
+                    type: array
+                    items:
+                      type: string
+            description:
+              description: A user-friendly description for the activity.
+              type: string
+            id:
+              description: The GiveCampus ID for the activity.
+              type: integer
+            location_name:
+              description: 'Common name or landmark representing the location. Example:
+                Bank of America Building'
+              type: string
+            name:
+              description: The name of the event activity.
+              type: string
+            guest_limit:
+              description: The maximum number of tickets available that can be purchased
+                for this activity.
+              type: integer
+            restrictions:
+              description: A list of restrictions applicable to the activity.
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    description: GiveCampus ID for the allowed ticket type. If a registrant
+                      selects this ticket type, they can sign up for the activity.
+                    type: string
+                  type:
+                    description: The type of the restriction. For now, the only possible
+                      value is 'ticket_type'
+                    type: string
+            timestamps:
+              description: A list of timestamps representing key activity information.
+              type: object
+              properties:
+                created_at:
+                  description: Creation timestamp of the activity in Unix time
+                  type: string
+                ends_at:
+                  description: End timestamp of the activity in Unix time
+                  type: string
+                starts_at:
+                  description: Start timestamp of the activity in Unix time
+                  type: string
+                virtual_link:
+                  description: Activity URL in case of virtual activity.
+                  type: string
+      add_ons:
+        description: A list of add-ons available for the event. Please note that add-ons
+          are only available for Complex Events.
+        type: array
+        items:
+          type: object
+          properties:
+            description:
+              description: A user-friendly description for the activity add-on.
+              type: string
+            fair_market_value:
+              description: The fair market value of the add-on.
+              type: string
+            name:
+              description: A user-friendly name for the add-on.
+              type: string
+            price:
+              description: Price for the add-on.
+              type: string
+            restrictions:
+              description: A list of restrictions applicable to the add-on.
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    description: The GiveCampus ID of the allowed ticket type. If
+                      a registrant selects this ticket type, they can purchase the
+                      add-on
+                    type: string
+                  type:
+                    description: The type of the restriction. For now, the only possible
+                      value is 'ticket_type'
+                    type: string
+            total_available:
+              description: Total number of units available for this add-on
+              type: string
+            unlimited:
+              description: Whether or not there is an unlimited number of units available
+                for this add-on.
+              type: boolean
+      additional_donations:
+        description: "<i>True</i> if additional donations are being accepted for the
+          event i.e. after a registration has been completed."
+        type: boolean
+      address_line1:
+        description: The street number and name for the event location, if in-person.
+        type: string
+      address_line2:
+        description: 'Additional information for the location. Example: Apt. 939'
+        type: string
+      address_city:
+        description: The city that the event location is in.
+        type: string
+      address_state:
+        description: The state that the event location is in.
+        type: string
+      address_zip:
+        description: The zipcode for the event location.
+        type: string
+      affiliations:
+        description: A list of affiliations available for registrants to choose from.
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              description: GiveCampus ID for the affiliation.
+              type: integer
+            label:
+              description: Human-readable label for the affiliation.
+              type: string
+            name:
+              description: 'Reporting column name for the affiliation. Examples: alumni,
+                parent, undergrad_faculty'
+              type: string
+      affiliations_accepted:
+        description: "<i>True</i> if affiliations are being accepted on the registration
+          form."
+        type: boolean
+      affiliations_required:
+        description: "<i>True</i> if affiliation selected is required on the registration
+          form."
+        type: boolean
+      contact:
+        description: Information for the event organizer.
+        type: object
+        properties:
+          email:
+            description: Designated email for event contact.
+            type: string
+          name:
+            description: Name of the event contact.
+            type: string
+      created_by:
+        description: Information about the user who created the event.
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the event creator.
+            type: integer
+          name:
+            description: Name of the event creator.
+            type: string
+      custom_section:
+        description: A free-form custom content section that displays content entered
+          by the admin.
+        type: string
+      description:
+        description: A user-friendly event description entered by the admin.
+        type: string
+      donation_button_text:
+        description: Configurable text for donation button call-to-action.
+        type: string
+      donation_text_header:
+        description: Configurable header text for donation call-to-action.
+        type: string
+      gift_designation:
+        description: Gift designation associated with the event.
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the designation.
+            type: integer
+          name:
+            description: Name of the designation.
+            type: string
+          unique_identifier:
+            description: 'Backend identifier for the designation. Examples: alumni_giving_day23,
+              faculty_marathon'
+            type: string
+      id:
+        description: GiveCampus ID for the event.
+        type: integer
+      image:
+        description: Publicly-accessible URL for event image.
+        type: string
+      integrated_donations:
+        description: "<i>True</i> if integrated donations are being accepted."
+        type: boolean
+      integrated_donation_header:
+        description: Header text for integrated donation call-to-action.
+        type: string
+      limit_per_registration:
+        description: Max number of guests allowed per registration.
+        type: integer
+      location_name:
+        description: Common name or landmark representing the event location.
+        type: string
+      name:
+        description: The name of the event.
+        type: string
+      overall_guest_limit:
+        description: Max number of guests that can be registered for the event.
+        type: integer
+      permalink:
+        description: Static, publicly-accessible URL for the event.
+        type: string
+      project:
+        description: Information about the campaign or giving form associated with
+          the event.
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the campaign or giving form.
+            type: integer
+          name:
+            description: Name of the campaign or giving form.
+            type: string
+          type:
+            description: Campaign or giving form type
+            type: string
+            enum:
+            - Donor
+            - Dollar
+            - Form
+          unique_identifier:
+            description: Backend identifier for the campaign or giving form.
+            type: string
+      promo_codes:
+        description: A list of promo codes associated with the event.
+        type: array
+        items:
+          type: object
+          properties:
+            applies_to_add_ons_and_activities:
+              description: Indicates whether the promo code discount applies to Add-Ons
+                and Activities.
+              type: boolean
+            code:
+              description: The code that the registrant must enter to receive the
+                discount.
+              type: string
+            description:
+              description: The admin-entered description for the promo code.
+              type: string
+            discount:
+              type: object
+              properties:
+                amount:
+                  description: The discount amount for the promo code.
+                  type: string
+                type:
+                  description: 'The type of discount. Examples: "percentage", "dollar"'
+                  type: string
+            id:
+              description: GiveCampus ID for the promo code.
+              type: integer
+            limit:
+              description: The total number of times the promo code can be used.
+              type: string
+            timestamps:
+              description: A list of timestamps representing key promo code information.
+              type: object
+              properties:
+                created_at:
+                  description: Creation timestamp of the promo code in Unix time (seconds
+                    since Epoch)
+                  type: string
+                ends_at:
+                  description: End timestamp of the promo code in Unix time (seconds
+                    since Epoch)
+                  type: string
+                starts_at:
+                  description: Start timestamp of the promo code in Unix time (seconds
+                    since Epoch)
+                  type: string
+      register_button_text:
+        description: Configurable button text for event registration call-to-action.
+        type: string
+      social_sharing_options:
+        description: Configurable options for sharing the event on social media.
+        type: object
+        properties:
+          hashtag:
+            description: Custom hashtag for the event.
+            type: string
+          image:
+            description: URL pointing to the share image for the event.
+            type: string
+          text:
+            description: Configurable share text for the event.
+            type: string
+      show_guest_list:
+        description: "<i>True</i> if the event guest list is publicly visible."
+        type: boolean
+      show_social_sharing_options:
+        description: "<i>True</i> if social media sharing options are visible to users."
+        type: boolean
+      social_media_text_header:
+        description: Custom header text for social media sharing section.
+        type: string
+      state:
+        description: |-
+          The state that the event is in.<br> <ul>
+            <li>"active" (The event has been published by the admin and is visible to users)</li>
+            <li>"archived" (The event has been archived and can no longer be seen by users)</li>
+            <li>"complete" (The event time has passed and guests can no longer register for new tickets)</li>
+            <li>"draft" (The event has not yet been published by the admin and is not visible to users)</li>
+          </ul>
+        type: string
+        enum:
+        - active
+        - archived
+        - complete
+        - draft
+      suggested_giving_amounts:
+        description: Configurable dollar values for donation amounts suggested to
+          registrants.
+        type: array
+        items:
+          type: string
+      terms_of_purchase:
+        description: Configurable terms and conditions for ticket purchase.
+        type: string
+      tickets_available:
+        description: Total number of tickets available for purchase. Returns "Infinity"
+          if unlimited tickets are being offered
+        type: string
+      ticket_fmv_designation:
+        description: Designation receiving the fair market value (non-deductible)
+          portion of ticket revenue.
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the designation.
+            type: integer
+          name:
+            description: Name of the designation.
+            type: string
+          unique_identifier:
+            description: 'Backend identifier for the designation. Examples: alumni_giving_day23,
+              faculty_marathon'
+            type: string
+      ticket_gift_designation:
+        description: Designation receiving the tax-deductible gift portion of ticket
+          revenue.
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the designation.
+            type: integer
+          name:
+            description: Name of the designation.
+            type: string
+          unique_identifier:
+            description: 'Backend identifier for the designation. Examples: alumni_giving_day23,
+              faculty_marathon'
+            type: string
+      tickets_sold:
+        description: Total number of tickets sold for the event thus far.
+        type: string
+      ticket_packages:
+        description: A list of ticket packages associated with the event.
+        type: array
+        items:
+          type: object
+          properties:
+            description:
+              description: A user-friendly description for the ticket package.
+              type: string
+            fair_market_value:
+              description: Fair market value of the ticket package price.
+              type: string
+            id:
+              description: GiveCampus ID for the ticket package.
+              type: integer
+            name:
+              description: Name of the ticket package.
+              type: string
+            number_of_tickets_per_package:
+              description: Number of tickets included in the ticket package.
+              type: integer
+            packages_sold:
+              description: Number of packages sold thus far.
+              type: integer
+            price:
+              description: Price per ticket package.
+              type: string
+            restrictions:
+              description: A list of restrictions applicable to the ticket package.
+              type: array
+              items:
+                type: object
+                properties:
+                  label:
+                    description: 'Human-readable label for the basis of the restriction.
+                      Examples: ''Alumni'', ''Parent'', ''Student'''
+                    type: string
+                  type:
+                    description: 'The type of the restriction. Possible values: ''registrant_affiliation'',
+                      ''guest_affiliation'''
+                    type: string
+                  values:
+                    description: 'Values that must be selected by registrants to satisfy
+                      the restriction. Examples: [''1998'', ''1999'', ''2000'']'
+                    type: array
+                    items:
+                      type: string
+            total_available:
+              description: Total number of packages available for purchase.
+              type: string
+            unlimited:
+              description: Whether or not unlimited units are available for this ticket
+                package.
+              type: boolean
+      ticket_types:
+        description: Ticket types being offered for the event.
+        type: array
+        items:
+          type: object
+          properties:
+            fair_market_value:
+              description: Fair market value of the ticket price.
+              type: string
+            id:
+              description: GiveCampus ID for the ticket type.
+              type: integer
+            name:
+              description: Name of the ticket type.
+              type: string
+            price:
+              description: Price per ticket.
+              type: string
+            restrictions:
+              description: A list of restrictions applicable to the ticket type.
+              type: array
+              items:
+                type: object
+                properties:
+                  label:
+                    description: 'Human-readable label for the basis of the restriction.
+                      Examples: ''Alumni'', ''Parent'', ''Student'''
+                    type: string
+                  type:
+                    description: 'The type of the restriction. Possible values: ''registrant_affiliation'',
+                      ''guest_affiliation'''
+                    type: string
+                  values:
+                    description: 'Values that must be selected by registrants to satisfy
+                      the restriction. Examples: [''1998'', ''1999'', ''2000'']'
+                    type: array
+                    items:
+                      type: string
+            tickets_available:
+              description: Total number of tickets available for purchase. Returns
+                "Infinity" if unlimited tickets are being offered.
+              type: string
+            tickets_sold:
+              description: Number of tickets sold thus far for the ticket type in
+                question.
+              type: integer
+            unlimited:
+              description: Whether or not unlimited units are available for this ticket
+                type.
+              type: boolean
+      timestamps:
+        description: A list of timestamps representing key event information.
+        type: object
+        properties:
+          ends_at:
+            description: End timestamp of the event in Unix time
+            type: integer
+          registration_ends_at:
+            description: End timestamp of the registration period in Unix time
+            type: integer
+          registration_starts_at:
+            description: Start timestamp of the registration period in Unix time
+            type: integer
+          starts_at:
+            description: Start timestamp of the event in Unix time
+            type: integer
+      type:
+        description: Whether the event is a simple or complex event. Activities and
+          add-ons are only available for complex events.
+        type: string
+        enum:
+        - complex
+        - simple
+      unique_identifier:
+        description: Unique identifier for the event. This is an optional field and
+          only available if configured.
+        type: string
+      virtual_link:
+        description: URL for the event (if the event is virtual).
+        type: string
+  ApiRequest:
+    "$ref": "../shared/types/api_request.yaml"
+  ApiResults:
+    "$ref": "../shared/types/api_results.yaml"

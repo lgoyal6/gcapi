@@ -1,0 +1,211 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GiveCampus Form Fields API
+  description: |-
+    The Form Fields API allows your school to retrieve a collection of standard and custom field records in JSON format. <h2>Security</h2> <p>Every API request must have a bearer token attached in the Authorization header.</p> <p>These tokens are generated within the GiveCampus UI and only school administrators with super-user permissions can generate and manage them. You will choose this initial set of “full” administrators during the GiveCampus onboarding process.</p> <p>All API responses will be delivered over a secure HTTPS connection, and a TLS version of 1.2 or 1.3 is required.</p> <p>GiveCampus maintains detailed logs of API access and can provide them to your team upon request.</p> <h2>Request Lifecycle</h2> <p>The API delivers data asynchronously using a request-and-poll pattern:</p> <ol>
+      <li><strong>Submit your request</strong> — Call the endpoint with your desired parameters. You'll receive a <code>request_id</code> and a <code>status</code> of <code>in_progress</code>.</li>
+      <li><strong>Poll for results</strong> — Call <code>/results/{request_id}</code> every 2–5 seconds until <code>status</code> changes to <code>completed</code> (or <code>error</code>).</li>
+      <li><strong>Download your data</strong> — When complete, the response includes a <code>download_url</code> containing a JSON array of objects matching the model defined below.</li>
+    </ol> <p>Most requests complete within a few seconds.</p> <h2>Testing</h2> <p>You can use the tools below to see responses from the API to understand how to build your own implementation.</p> <p>You will see the URLs and paths necessary to make your own API calls.</p> <ol>
+      <li>Click the Authorize button below to enter in your API Key in the following format: <code>Bearer API_TOKEN</code></li>
+      <li>After authorized, you can click the close button in the authorization modal to start making requests</li>
+      <li>Expand the Form Fields section below to see the available parameters that you can leverage to filter API results.</li>
+      <li>After requesting a set of form fields, you will receive a <code>request_id</code>.  Copy that ID and then use that in the <code>results</code> section to see the progress of your request and to see the download URL once the request is completed.</li>
+    </ol> <p>In the routes section below, there is a "Try it out" button.  After authenticating, you can select from the available parameters, and you will see the curl request performed, the results of your request, and any errors if applicable.</p> <p><i>GiveCampus Proprietary and Confidential</i></p>
+basePath: "/api"
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Enter the token with the `Bearer ` prefix, e.g. "Bearer XXXXXXXXXXXXX".
+paths:
+  "/form_fields":
+    get:
+      tags:
+      - Retrieve a list of form fields
+      summary: Find your form fields
+      description: |-
+        <p>This endpoint will submit a request to retrieve form fields based on the supplied parameters.</p> <p>The results of this request is a JSON object that contains the following:</p>
+          <ol>
+            <li>request_id</li>
+            <li>state</li>
+          </ol>
+        <p>Once you receive the <code>request_id</code>, you can make a subsequent request to the <code>results</code> operation listed on this page.</p> <p>You will take this id to check the <code>state</code> of the request and once it is <code>completed</code> you will have a valid <code>download_url</code> that will contain the data from the original form fields request</p>
+      operationId: findDesignations
+      produces:
+      - application/json
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a request id that can be used to make further requests
+          schema:
+            "$ref": "#/definitions/ApiRequest"
+        '400':
+          description: Invalid request
+  "/results/{request_id}":
+    get:
+      tags:
+      - Results
+      summary: Get your results
+      description: Returns the results of your request
+      operationId: findResults
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+        required: true
+        description: Request ID
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a status and download url for your request
+          schema:
+            "$ref": "#/definitions/ApiResults"
+        '202':
+          description: returns a status for your request
+          schema:
+            "$ref": "../shared/types/in_progress_api_results.yaml"
+        '400':
+          description: Invalid request
+definitions:
+  FormFields:
+    description: The following fields are returned per form field in an array in the
+      downloaded file from the Form Fields API
+    type: object
+    properties:
+      active:
+        description: Is this field active?
+        type: boolean
+      help_text:
+        description: Help text that is displayed under the field for your donors
+        type: string
+      id:
+        description: GiveCampus ID for the form field
+        type: integer
+      input_type:
+        description: The type of field
+        type: string
+        enum:
+        - addr_state
+        - affiliation
+        - alumni_joint_gift
+        - checkbox
+        - checkout_button
+        - configuration
+        - country
+        - designation
+        - email
+        - hidden
+        - incentive
+        - joint_gift
+        - none
+        - number
+        - section_divider
+        - select
+        - text
+      label:
+        description: The human-readable label for the field. This is what donors see
+          on the donation form.
+        type: string
+      locked:
+        description: If a field cannot be removed, it will be locked.  Name, Email,
+          Country, and Zipcode are examples of these fields.
+        type: boolean
+      parent_id:
+        description: If the field is dependent on another field to be displayed, this
+          will contain the parent field's ID
+        type: integer
+      placeholder:
+        description: The placeholder is the text that will display inside of the field,
+          as a hint to the user about what to enter into the field.
+        type: string
+      position:
+        description: This the position on the form where this field will be displayed
+        type: integer
+      project:
+        description: The campaign or giving form associated with the field
+        type: object
+        properties:
+          id:
+            description: GiveCampus ID for the campaign or giving form
+            type: integer
+          name:
+            description: The name of the campaign or giving form
+            type: string
+          type:
+            description: The type of campaign or giving form.  Dollar and Donor types
+              are for Social Fundraising Campaigns
+            type: string
+            enum:
+            - Dollar
+            - Donor
+            - Form
+          unique_identifier:
+            description: If provided, this unique identifier (i.e., 'appeal code',
+              'fund code', 'campaign code') can help your team identify every online
+              donation that was made using this form.
+            type: string
+      form:
+        description: The form template the field is associated with
+        type: object
+        properties:
+          name:
+            description: The name of the form template
+            type: string
+          type:
+            description: The type of form template
+            type: string
+            enum:
+            - pre
+            - post
+          donation_type:
+            name: The type of donation form
+            type: string
+            enum:
+            - sfp
+            - gf
+            - matchallenge
+      report_column:
+        description: The column header for this field in CSV Donation Reports for
+          your school.
+        type: string
+      required:
+        description: Whether or not the field is required for the donor
+        type: boolean
+      select_options:
+        description: If the field is a select type, these are the options from which
+          a donor can choose
+        type: array
+        items:
+          properties:
+            option1:
+              description: an example value from which a donor to choose
+              type: string
+            option2:
+              description: an example value from which a donor to choose
+              type: string
+            option3:
+              description: an example value from which a donor to choose
+              type: string
+      timestamps:
+        description: Timestamps in Unix time for the form field
+        type: object
+        properties:
+          created_at:
+            description: Timestamp in Unix time when the field was created
+            type: integer
+          updated_at:
+            description: Timestamp in Unix time when the field was last updated
+            type: integer
+  ApiRequest:
+    "$ref": "../shared/types/api_request.yaml"
+  ApiResults:
+    "$ref": "../shared/types/api_results.yaml"

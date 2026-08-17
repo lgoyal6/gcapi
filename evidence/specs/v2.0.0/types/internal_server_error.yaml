@@ -1,0 +1,9 @@
+---
+type: object
+properties:
+  message:
+    type: string
+    example: Example error message
+  status:
+    type: string
+    example: error

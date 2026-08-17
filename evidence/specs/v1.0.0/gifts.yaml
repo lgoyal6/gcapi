@@ -1,0 +1,624 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GiveCampus Gifts API
+  description: |-
+    The Gift API allows your school to retrieve a collection of gift records in JSON format. You can use a variety of state and time-based filters to fine-tune your selection of gifts. <h2>Security</h2> <p>Every API request must have a bearer token attached in the Authorization header.</p> <p>These tokens are generated within the GiveCampus UI and only school administrators with super-user permissions can generate and manage them. You will choose this initial set of “full” administrators during the GiveCampus onboarding process.</p> <p>All API responses will be delivered over a secure HTTPS connection, and a TLS version of 1.2 or 1.3 is required.</p> <p>GiveCampus maintains detailed logs of API access and can provide them to your team upon request.</p> <h2>Request Lifecycle</h2> <p>The API delivers data asynchronously using a request-and-poll pattern:</p> <ol>
+      <li><strong>Submit your request</strong> — Call the endpoint with your desired parameters. You'll receive a <code>request_id</code> and a <code>status</code> of <code>in_progress</code>.</li>
+      <li><strong>Poll for results</strong> — Call <code>/results/{request_id}</code> every 2–5 seconds until <code>status</code> changes to <code>completed</code> (or <code>error</code>).</li>
+      <li><strong>Download your data</strong> — When complete, the response includes a <code>download_url</code> containing a JSON array of objects matching the model defined below.</li>
+    </ol> <p>Most requests complete within a few seconds.</p> <h2>Testing</h2> <p>You can use the tools below to see responses from the API to understand how to build your own implementation.</p> <p>You will see the URLs and paths necessary to make your own API calls.</p> <ol>
+      <li>Click the Authorize button below to enter in your API Key in the following format: <code>Bearer API_TOKEN</code></li>
+      <li>After authorized, you can click the close button in the authorization modal to start making requests</li>
+      <li>Expand the Gifts section below to see the available parameters that you can leverage to filter API results.</li>
+      <li>After requesting a subset of gifts, you will receive a <code>request_id</code>.  Copy that ID and then use that in the <code>results</code> section to see the progress of your request and to see the download URL once the request is completed.</li>
+    </ol> <p>In the routes section below, there is a "Try it out" button.  After authenticating, you can select from the available parameters, and you will see the curl request performed, the results of your request, and any errors if applicable.</p> <p><i>GiveCampus Proprietary and Confidential</i></p>
+basePath: "/api"
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Enter the token with the `Bearer ` prefix, e.g. "Bearer XXXXXXXXXXXXX".
+paths:
+  "/gifts":
+    get:
+      tags:
+      - Gifts
+      summary: Find your gifts
+      description: |-
+        <p>This endpoint will submit a request to retrieve gifts based on the supplied parameters.</p> <p>The results of this request is a JSON object that contains the following:</p>
+          <ol>
+            <li>request_id</li>
+            <li>state</li>
+          </ol>
+        <p>Once you receive the <code>request_id</code>, you can make a subsequent request to the <code>results</code> operation listed on this page.</p> <p>You will take this id to check the <code>state</code> of the request and once it is <code>completed</code> you will have a valid <code>download_url</code> that will contain the data from the original gifts request</p> <p><b>Important Notes:</b></p> <ul>
+          <li>At least one of the state based parameters beyond start/end are required.</li>
+          <li>By default, the start and end parameters filter on when donors complete the online checkout flow (i.e., datetime_of_pledge).</li>
+          <li>You can provide an optional time_field string parameter to filter on one the following timestamps instead: captured_at, checkout_at, created_at, deposited_at, refunded_at, updated_at</li>
+        </ul>
+      operationId: findGifts
+      produces:
+      - application/json
+      parameters:
+      - name: start
+        in: query
+        description: Start timestamp of the desired time range (Unix time in seconds)
+        required: true
+        type: integer
+      - name: end
+        in: query
+        description: End timestamp of the desired time range (Unix time in seconds)
+        required: true
+        type: integer
+      - name: authorized
+        in: query
+        description: A true/false field to specify if you want to include successful
+          gifts that are pending deposit
+        required: false
+        type: boolean
+      - name: charged_back
+        in: query
+        description: A true/false field to specify if you want to include gifts that
+          were successfully charged back by donors
+        required: false
+        type: boolean
+      - name: disputed
+        in: query
+        description: A true/false field to specify if you want to include gifts that
+          are currently being disputed by donors
+        required: false
+        type: boolean
+      - name: failed
+        in: query
+        description: A true/false field to specify if you want to include gifts that
+          did not charge successfully
+        required: false
+        type: boolean
+      - name: paid
+        in: query
+        description: A true/false field to specify if you want to include gifts that
+          have been deposited into your bank account
+        required: false
+        type: boolean
+      - name: pending
+        in: query
+        description: A true/false field to specify if you want to include pending
+          gifts that have not been charged yet
+        required: false
+        type: boolean
+      - name: pending_authorization
+        in: query
+        description: A true/false field to specify if you want to include bank gifts
+          in the middle of ACH settlement
+        required: false
+        type: boolean
+      - name: refunded
+        in: query
+        description: A true/false field to specify if you want to include gifts that
+          were refunded
+        required: false
+        type: boolean
+      - name: time_field
+        in: query
+        description: Optional field to change by what field the start and end date
+          will filter
+        required: false
+        type: string
+        enum:
+        - captured_at
+        - checkout_at
+        - created_at
+        - deposited_at
+        - refunded_at
+        - updated_at
+      - name: ids
+        in: query
+        description: A comma separated list of GiveCampus Gift IDs to filter the response
+          by. If passed, all other filters are ignored.
+        required: false
+        type: string
+      - name: constituent_ids
+        in: query
+        description: A comma-separated list of Constituent IDs (from your system)
+          to filter gifts by.
+        type: string
+      - name: deposit_ids
+        in: query
+        description: A comma-separated list of Stripe/PayPal Deposit IDs to filter
+          gifts by.
+        type: string
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a request id that can be used to make further requests
+          schema:
+            "$ref": "#/definitions/ApiRequest"
+        '400':
+          description: Invalid request
+  "/results/{request_id}":
+    get:
+      tags:
+      - Results
+      summary: Get your results
+      description: Returns the results of your request, like gifts
+      operationId: findResults
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+        required: true
+        description: Request ID
+      security:
+      - Bearer: []
+      responses:
+        '200':
+          description: returns a status and download url for your request
+          schema:
+            "$ref": "#/definitions/ApiResults"
+        '202':
+          description: returns a status for your request
+          schema:
+            "$ref": "../shared/types/in_progress_api_results.yaml"
+        '400':
+          description: Invalid request
+definitions:
+  Gift:
+    description: The following fields are returned per gift in an array in the downloaded
+      file from the Gifts API
+    type: object
+    properties:
+      ach_verified:
+        description: Will show if the donor has verified their bank account for manually
+          verified bank transfers.
+        type: boolean
+      fund_source:
+        description: The source of the gift such as "Giving Form" or "Social Fundraising".
+        type: string
+      address:
+        description: 'The address entered by the donor on the prepayment form. Each
+          field will be reported separately:'
+        type: object
+        properties:
+          line1:
+            type: string
+          line2:
+            type: string
+          city:
+            type: string
+          country:
+            type: string
+          state:
+            type: string
+          postal_code:
+            type: string
+      advocate:
+        description: If a gift has any advocate (individual or unique link) data,
+          that will be collected in this section.
+        type: object
+        properties:
+          id:
+            description: Either the ID of the unique link used or the user ID of the
+              individual advocate.
+            type: string
+          source:
+            description: The referring URL that the donor was on prior to clicking
+              the unique link.
+            type: string
+          link:
+            description: The name of the individual advocate.
+            type: string
+          description:
+            description: The partner defined description for unique links.
+            type: string
+          tag:
+            description: The partner defined tag for unique links
+            type: string
+          link_url:
+            description: The URL for unique links
+            type: string
+      affiliations:
+        description: The donor selected affiliation from the prepayment form.
+        type: array
+        items:
+          type: object
+          properties:
+            unique_identifier:
+              description: The backend identifier of the selected affiliation.
+              type: string
+            name:
+              description: The name of the selected affiliation.
+              type: string
+            values:
+              description: The secondary values for the affiliation, if applicable,
+                in list form.
+              type: array
+      anonymous:
+        description: Indicates if a donor selected to not have their name appear on
+          the public campaign page. This only applies to gifts made to a fundraising
+          campaign.
+        type: boolean
+      card_type:
+        description: The payment type used for the donation. This may be the issuing
+          credit card (e.g. visa) or other payment type (e.g. Venmo, Fidelity Charitable).
+        type: string
+      checkout_id:
+        description: The unique identifier issued by the  payment processor.
+        type: string
+      constituent_identifier:
+        description: The partner defined constituent ID, if uploaded to GiveCampus
+          through Reporting  settings, Data Importer, or Volunteer Management.
+        type: string
+      crypto_transaction_hash_id:
+        description: The unique ID for a transaction of a gift made using crypto.
+        type: string
+      crypto_value_usd_at_time_of_donation:
+        description: The USD value of a crypto gift when the gift was initiated.
+        type: string
+      currency:
+        description: Short code for the currency of the gift (USD, CAD etc.).
+        type: string
+      custom_fields:
+        description: Custom fields created by the partner will be reported in this
+          section.  The following fields are example only.  Your results will be unique
+          to your organization.
+        type: object
+        properties:
+          in_honor_of:
+            type: string
+          graduation_year:
+            type: string
+      daf_fund_id:
+        description: If the gift was made through a donor-advised fund, the ID of
+          the fund.
+        type: string
+      daf_grant_id:
+        description: If the gift was made through a donor-advised fund, the ID of
+          the grant associated with the fund.
+        type: string
+      daf_tracking_id:
+        description: If the gift was made through a donor-advised fund, the tracking
+          ID for the grant.
+        type: string
+      designations:
+        description: The designation selected by the donor on the prepayment form
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              description: The GiveCampus unique identifier for the designation.
+              type: integer
+            name:
+              description: The name of the designation selected by the donor.
+              type: string
+            amount:
+              description: The amount of the gift applied to this designation. This
+                will be a percentage of the total amount if multiple designations
+                are selected.
+              type: string
+            unique_identifier:
+              description: The backend ID, defined by the partner, for the donor selected
+                designation
+              type: string
+            write_in:
+              description: The text entered by the donor if they select a designation
+                that allows a write in value.
+              type: string
+      donation_type:
+        description: 'Specifies if the gift was a single donation, installment in
+          a recurring gift, a pledge, a match, or a challenge. Possible values:'
+        type: string
+        enum:
+        - challenge
+        - donation
+        - pledge
+        - general
+        - installment
+        - match
+      donor_covered_payment_fee:
+        description: If the donor covered the payment fee, the amount will be displayed
+          here
+        type: string
+      event_id:
+        description: The GiveCampus unique identifier for the event associated with
+          this gift, if applicable.
+        type: integer
+      event_unique_identifier:
+        description: The partner defined backend identifier for the event associated
+          with this gift, if applicable.
+        type: string
+      failure_reason:
+        description: The failure code provided by the payment processor for failed
+          gifts.
+        type: string
+      give_full_match_challenge_amount:
+        description: Shows if a match/challenge donor elected to give the full amount
+          of their gift regardless of if the parameters of the match/challenge were
+          met.
+        type: string
+      honor:
+        description: The value entered by the donor in the "Honor" field.
+        type: string
+      id:
+        description: The GiveCampus unique identifier for the gift.
+        type: integer
+      incentive:
+        description: If a donor selects an incentive on the prepayment form, that
+          will be detailed in this section.
+        type: object
+        properties:
+          id:
+            description: The GiveCampus unique identifier for the incentive.
+            type: string
+          headline:
+            description: The partner defined headline for the incentive.
+            type: string
+          description:
+            description: The partner defined description of the incentive.
+            type: string
+          market_value:
+            description: The partner defined market value of the incentive.
+            type: string
+          tax_deductible_amount:
+            description: The value field minus the market_value field.
+            type: string
+      joint_gift:
+        description: The value entered by the donor in the "Joint Gift" field on the
+          prepayment form.
+        type: string
+      joint_year:
+        description: The value entered by the donor in the "Joint Year" field on the
+          prepayment form.
+        type: string
+      maiden_name:
+        description: The value entered by the donor in the "Maiden Name" field on
+          the prepayment form.
+        type: string
+      matching_company:
+        description: Details company matching information if the Double the Donation
+          integration is enabled.
+        type: object
+        properties:
+          id:
+            description: The Double the Donation unique identifier.
+            type: string
+          name:
+            description: The name of the identified company in the matching database.
+            type: string
+          search_status:
+            description: The result of the search term used in the search_text field.
+            type: string
+          search_text:
+            description: The search term the donor used on the prepayment page to
+              locate the company.
+            type: string
+      match_contribution_ids:
+        description: An array of GiveCampus Match Contribution IDs
+        type: array
+        items:
+          type: integer
+      name_title:
+        description: The value entered by the donor in the "Title" field on the prepayment
+          form.
+        type: string
+      note_content:
+        description: Joint spouse gift
+        type: string
+      paid_email:
+        description: The email associated to the payment method used for the gift.
+        type: string
+      paid_name:
+        description: The name associated to the payment method used for the gift.
+        type: string
+      payer_email:
+        description: The email entered by the donor on the prepayment form.
+        type: string
+      payer_name:
+        description: The name entered by the donor on the prepayment form. If the
+          name field is expanded  into multiple fields the concatenated name will
+          show here, and the components (first, last) are shown in the "custom_fields"
+          section.
+        type: string
+      payment_country:
+        description: ISO 3166-1 alpha-2 country code of the card-issuing country for
+          Stripe card payments (e.g. <code>US</code>, <code>DE</code>, <code>GB</code>).
+          Null for non-card payment methods.
+        type: string
+      payment_method:
+        description: The payment processor used to process the payment.
+        type: string
+      payment_service_fee:
+        description: Amount for the payment service fee
+        type: string
+      phone_number:
+        description: The phone number entered by the donor on the prepayment form.
+        type: string
+      project:
+        description: Information about the campaign or form the gift was made on.
+        type: object
+        properties:
+          id:
+            description: The GiveCampus unique identifier for the campaign or form.
+            type: integer
+          type:
+            description: 'Defines what kind of project: campaign (including goal type-
+              donor or dollar) or Giving Form'
+            type: string
+          name:
+            description: The partner defined name of the campaign or form.
+            type: string
+          unique_identifier:
+            description: The partner defined backend identifier for the project. This
+              is set on the "Giving Form" tab on the campaign or form settings in
+              the "Internal Reporting" section.
+            type: string
+      refund_reason:
+        description: The partner defined refund reason entered when issuing the refund.
+        type: string
+      refund_recovery_transfer:
+        description: If a donation is refunded this will show the deposit ID of the
+          deposit the funds were removed from to cover the refund amount.
+        type: string
+      refund_status:
+        description: The status of a refund, if applicable.
+        type: string
+      spouse:
+        description: The value entered by the donor in the ‘Spouse’ field on the prepayment
+          form.
+        type: string
+      state:
+        description: Where the gift is in the processing cycle. Ex. "authorized" indicates
+          successful but not yet deposited.
+        type: string
+      stripe_deposit:
+        description: deposit ID after a gift is deposited. Will reflect both Stripe
+          and PayPal deposit IDs.
+        type: string
+      stripe_refund:
+        description: The refund status of the donation. Will reflect the refund status
+          for both Stripe and PayPal transactions.
+        type: string
+      subscription:
+        description: Details of the subscription for recurring gifts.
+        type: object
+        properties:
+          id:
+            description: The GiveCampus unique identifier for the recurring subscription.
+            type: string
+          state:
+            description: The current state of the subscription (active, failed, complete,
+              etc.)
+            type: string
+          period:
+            description: 'The recurring interval of the subscription (annually, monthly);
+              Possible values:<ul><li>monthly</li><li>yearly</li><li>limited_months
+              - used when a school is setup to select  a specific # of months duration
+              (e.g 7 months)</li></ul>'
+            type: string
+          length:
+            description: The number of period intervals of the subscription. If period
+              is monthly, this represents the number of years for the subscription
+              (i.e. length of 2 means 2 x 12 so 24 monthly installments). If period
+              is limited_months then it represents the number of months of the subscription.
+              Prefer <code>normalized_period</code> and <code>normalized_length</code>
+              for new integrations — they expose the same duration in matching units
+              without requiring the consumer to convert.
+            type: string
+          normalized_period:
+            description: The recurring interval of the subscription, normalized so
+              it can be paired with <code>normalized_length</code> in matching units.
+              Possible values:<ul><li>monthly (also returned when the raw <code>period</code>
+              is <code>limited_months</code>)</li><li>weekly</li><li>yearly</li></ul>
+            type: string
+          normalized_length:
+            description: 'The number of <code>normalized_period</code> intervals in
+              the subscription, in matching units. If <code>normalized_period</code>
+              is <code>monthly</code>, this is the total number of months; if <code>weekly</code>,
+              the total number of weeks; if <code>yearly</code>, the total number
+              of years. For example, a 3-year monthly pledge returns <code>normalized_period:
+              "monthly", normalized_length: 36</code>.'
+            type: integer
+          installment_number:
+            description: Which specific installment this gift is in the subscription
+            type: string
+          indefinite:
+            description: Either "True" or "False" depending on if the gift is of indefinite
+              length or not.
+            type: boolean
+          subscription_type:
+            description: The type of form the subscription was created by. "donation"
+              for Giving Forms or Campaigns, "general" for Backup Campaign Forms,
+              or "pledge" for Pledge Giving Forms.
+            type: string
+      terminal_gift:
+        description: Specifies if the donation was made using GC Connect (true) or
+          not (false).
+        type: boolean
+      terminal_type:
+        description: Type of terminal used
+        type: string
+      timestamps:
+        description: These are the different timestamps captured for the each gift.
+        type: object
+        properties:
+          created_at:
+            description: The time the prepayment form was submitted.
+            type: integer
+          updated_at:
+            description: The last time the gift was updated
+            type: integer
+          checkout_at:
+            description: This represents the moment a school's payment processor initiated
+              a charge against the donor's credit card or bank account.
+            type: integer
+          captured_at:
+            description: The time when a gift moves to the state "Authorized".
+            type: integer
+          datetime_of_pledge:
+            description: The time the payment form was submitted.
+            type: integer
+          deposited_at:
+            description: The time the gift is deposited to the partner’s connected
+              bank account.
+            type: string
+          refunded_at:
+            description: The time that the gift was refunded.
+            type: string
+          subscription_start_at:
+            description: If the gift is part of a recurring subscription, the time
+              the first donation in the subscription ran.
+            type: integer
+          subscription_end_at:
+            description: If the gift is part of a recurring subscription, the time
+              the subscription will end (if subscription is active) or the date the
+              subscription was originally set to end (if subscription is not active).
+            type: integer
+          subscription_last_run_at:
+            description: If the gift is part of a recurring subscription, the time
+              the most recent donation in subscription ran.
+            type: integer
+      utm_campaign:
+        description: The name of the marketing campaign used in the UTM parameters
+          on the URL used by the donor when making the donation
+        type: string
+      utm_content:
+        description: The type of content used for the URL in the UTM parameters on
+          the URL used by the donor when making the donation
+        type: string
+      utm_medium:
+        description: The medium in which the URL used by the donor was found in the
+          UTM parameters on the URL used by the donor when making the donation
+        type: string
+      utm_source:
+        description: The source for which the URL was found (such as google, facebook,
+          instagram, etc) in the UTM parameters on the URL used by the donor when
+          making the donation
+        type: string
+      utm_term:
+        description: The terms used (such as give now, donate today, etc) in the UTM
+          parameters on the URL used by the donor when making the donation
+        type: string
+      value:
+        description: The gift amount (for installments this will be the installment
+          amount, not the total gift amount).
+        type: string
+      value_in_currency:
+        description: '1500.00'
+        type: string
+      value_orig_currency:
+        description: '1500.00'
+        type: string
+      value_usd:
+        description: The value of the gift in USD. This will match the field value
+          for gifts made in USD.
+        type: string
+  ApiRequest:
+    "$ref": "../shared/types/api_request.yaml"
+  ApiResults:
+    "$ref": "../shared/types/api_results.yaml"

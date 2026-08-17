@@ -1,0 +1,126 @@
+55 documented operations across 16 published specs
+
+  v1.0.0/assignments.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/assignments.yaml)
+      PUT    /api/assignments                           upsertAssignments
+             params: assignments*
+      POST   /api/assignments/search                    searchAssignments
+             params: search_request*
+      GET    /api/results/{request_id}                  getAssignmentResults
+             params: request_id*
+  v1.0.0/bbcrm_interactions.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/bbcrm_interactions.yaml)
+      POST   /api/bbcrm_interactions/search             searchBbcrmInteractions
+             params: search_request*
+      POST   /api/bbcrm_interactions                    createBbcrmInteractions
+             params: bbcrm_interactions*
+      PUT    /api/bbcrm_interactions                    updateBbcrmInteractions
+             params: bbcrm_interactions*
+      GET    /api/results/{request_id}                  getBbcrmInteractionResults
+             params: request_id*
+  v1.0.0/constituents.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/constituents.yaml)
+      GET    /api/constituents                          findConstituents
+      POST   /api/constituents                          createConstituents
+             params: Constituent Details
+      PUT    /api/constituents                          updateConstituents
+             params: Constituent Details
+      GET    /api/results/{request_id}                  findResults
+             params: request_id*
+  v1.0.0/contact_reports.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/contact_reports.yaml)
+      POST   /api/contact_reports/search                searchContactReports
+             params: search_request*
+      POST   /api/contact_reports                       createContactReports
+             params: contact_reports*
+      PUT    /api/contact_reports                       updateContactReports
+             params: contact_reports*
+      GET    /api/results/{request_id}                  getContactReportResults
+             params: request_id*
+  v1.0.0/designation_groups.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/designation_groups.yaml)
+      GET    /api/designation_groups                    findDesignationGroups
+      POST   /api/designation_groups                    createDesignationGroups
+             params: Designation Groups Details
+      GET    /api/results/{request_id}                  findResults
+             params: request_id*
+  v1.0.0/designations.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/designations.yaml)
+      GET    /api/designations                          findDesignations
+             params: ids
+      POST   /api/designations                          createDesignations
+             params: Designation Details
+      PUT    /api/designations                          updateDesignations
+             params: update_existing_gifts, simplified, Designation Details
+      GET    /api/results/{request_id}                  findResults
+             params: request_id*
+  v1.0.0/event_registrations.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/event_registrations.yaml)
+      GET    /api/event_registrations                   findEventRegistrations
+             params: state, start, end, time_field, payment_state, ids, event_ids, deposit_ids
+      GET    /api/events/{id}/registrations             findEventRegistrations
+             params: id*, state, payment_state, deposit_ids
+      GET    /api/results/{request_id}                  findResults
+             params: request_id*
+  v1.0.0/events.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/events.yaml)
+      GET    /api/events                                findEvents
+             params: state*, start, end
+      GET    /api/results/{request_id}                  findResults
+             params: request_id*
+  v1.0.0/form_fields.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/form_fields.yaml)
+      GET    /api/form_fields                           findDesignations
+      GET    /api/results/{request_id}                  findResults
+             params: request_id*
+  v1.0.0/gifts.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/gifts.yaml)
+      GET    /api/gifts                                 findGifts
+             params: start*, end*, authorized, charged_back, disputed, failed, paid, pending, pending_authorization, refunded, time_field, ids, constituent_ids, deposit_ids
+      GET    /api/results/{request_id}                  findResults
+             params: request_id*
+  v1.0.0/imported_gifts.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/imported_gifts.yaml)
+      GET    /api/imported_gifts                        findImportedGifts
+      POST   /api/imported_gifts                        createImportedGifts
+             params: Create Imported Gift Details
+      PUT    /api/imported_gifts                        updateImportedGifts
+             params: Updated Imported Gift Details
+      GET    /api/results/{request_id}                  findResults
+             params: request_id*
+  v1.0.0/opportunities.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/opportunities.yaml)
+      POST   /api/opportunities/search                  searchOpportunities
+             params: search_request*
+      POST   /api/opportunities                         createOpportunities
+             params: opportunities*
+      PUT    /api/opportunities                         updateOpportunities
+             params: opportunities*
+      GET    /api/results/{request_id}                  getOpportunityResults
+             params: request_id*
+  v1.0.0/recurring_subscriptions.yaml  (https://www.givecampus.com/documentation/api/v1.0.0/recurring_subscriptions.yaml)
+      GET    /api/recurring_subscriptions               findRecurringSubscriptions
+             params: time_field, start, end, ids, constituent_ids
+      GET    /api/recurring_subscriptions/{subscription_id} findRecurringSubscriptionById
+             params: subscription_id*
+      GET    /api/results/{request_id}                  findResults
+             params: request_id*
+  v2.0.0/constituents.yaml  (https://www.givecampus.com/documentation/api/v2.0.0/constituents.yaml)
+      POST   /api/v2/constituents/search                   searchConstituents
+             params: None*
+      POST   /api/v2/constituents                          createConstituents
+             params: None*
+      PUT    /api/v2/constituents                          updateConstituents
+             params: None*
+      GET    /api/v2/results/{request_id}                  findResults
+             params: request_id*
+  v2.0.0/designation_groups.yaml  (https://www.givecampus.com/documentation/api/v2.0.0/designation_groups.yaml)
+      GET    /api/v2/designation_groups                    findDesignationGroups
+      POST   /api/v2/designation_groups                    createDesignationGroups
+             params: Designation Groups Details
+      PUT    /api/v2/designation_groups                    updateDesignationGroups
+             params: Designation Groups Details
+      DELETE /api/v2/designation_groups                    deleteDesignationGroups
+             params: Designation Groups Details
+      GET    /api/v2/results/{request_id}                  findResults
+             params: request_id*
+  v2.0.0/designations.yaml  (https://www.givecampus.com/documentation/api/v2.0.0/designations.yaml)
+      GET    /api/v2/designations                          findDesignations
+             params: ids
+      POST   /api/v2/designations                          createDesignations
+             params: Designation Details
+      PUT    /api/v2/designations                          updateDesignations
+             params: update_existing_gifts, simplified, Designation Details
+      GET    /api/v2/results/{request_id}                  findResults
+             params: request_id*
+
+* = required.  No page/limit/offset/cursor parameter exists in any spec:
+  results arrive as one JSON array behind a completed request's download_url.
