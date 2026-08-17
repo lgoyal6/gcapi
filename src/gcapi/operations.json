@@ -1,0 +1,1620 @@
+{
+  "source": "GiveCampus published Swagger 2.0 specs",
+  "captured": "2026-08-14",
+  "docs_index": "https://www.givecampus.com/documentation/api/index.html",
+  "operations": [
+    {
+      "spec": "v1.0.0/assignments.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/assignments.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Assignments API (Beta)",
+      "base_path": "/api",
+      "method": "PUT",
+      "path": "/assignments",
+      "operation_id": "upsertAssignments",
+      "summary": "Create or update assignments",
+      "parameters": [
+        {
+          "name": "assignments",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "202",
+        "400",
+        "401",
+        "404",
+        "500"
+      ]
+    },
+    {
+      "spec": "v1.0.0/assignments.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/assignments.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Assignments API (Beta)",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/assignments/search",
+      "operation_id": "searchAssignments",
+      "summary": "Search assignments",
+      "parameters": [
+        {
+          "name": "search_request",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "202",
+        "400",
+        "401",
+        "404",
+        "500"
+      ]
+    },
+    {
+      "spec": "v1.0.0/assignments.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/assignments.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Assignments API (Beta)",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "getAssignmentResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "401",
+        "404",
+        "500"
+      ]
+    },
+    {
+      "spec": "v1.0.0/bbcrm_interactions.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/bbcrm_interactions.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus BBCRM Interactions API",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/bbcrm_interactions/search",
+      "operation_id": "searchBbcrmInteractions",
+      "summary": "Search BBCRM interactions",
+      "parameters": [
+        {
+          "name": "search_request",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/bbcrm_interactions.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/bbcrm_interactions.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus BBCRM Interactions API",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/bbcrm_interactions",
+      "operation_id": "createBbcrmInteractions",
+      "summary": "Create BBCRM interactions",
+      "parameters": [
+        {
+          "name": "bbcrm_interactions",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/bbcrm_interactions.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/bbcrm_interactions.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus BBCRM Interactions API",
+      "base_path": "/api",
+      "method": "PUT",
+      "path": "/bbcrm_interactions",
+      "operation_id": "updateBbcrmInteractions",
+      "summary": "Update BBCRM interactions",
+      "parameters": [
+        {
+          "name": "bbcrm_interactions",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/bbcrm_interactions.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/bbcrm_interactions.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus BBCRM Interactions API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "getBbcrmInteractionResults",
+      "summary": "Get processing results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/constituents.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/constituents.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Constituents API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/constituents",
+      "operation_id": "findConstituents",
+      "summary": "Find your constituents",
+      "parameters": [],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/constituents.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/constituents.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Constituents API",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/constituents",
+      "operation_id": "createConstituents",
+      "summary": "Create a constituent",
+      "parameters": [
+        {
+          "name": "Constituent Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/constituents.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/constituents.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Constituents API",
+      "base_path": "/api",
+      "method": "PUT",
+      "path": "/constituents",
+      "operation_id": "updateConstituents",
+      "summary": "Update constituents",
+      "parameters": [
+        {
+          "name": "Constituent Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/constituents.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/constituents.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Constituents API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/contact_reports.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/contact_reports.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Contact Reports API",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/contact_reports/search",
+      "operation_id": "searchContactReports",
+      "summary": "Search contact reports",
+      "parameters": [
+        {
+          "name": "search_request",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/contact_reports.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/contact_reports.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Contact Reports API",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/contact_reports",
+      "operation_id": "createContactReports",
+      "summary": "Submit contact reports",
+      "parameters": [
+        {
+          "name": "contact_reports",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/contact_reports.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/contact_reports.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Contact Reports API",
+      "base_path": "/api",
+      "method": "PUT",
+      "path": "/contact_reports",
+      "operation_id": "updateContactReports",
+      "summary": "Update contact reports",
+      "parameters": [
+        {
+          "name": "contact_reports",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/contact_reports.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/contact_reports.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Contact Reports API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "getContactReportResults",
+      "summary": "Get processing results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/designation_groups.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/designation_groups.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Designation Groups API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/designation_groups",
+      "operation_id": "findDesignationGroups",
+      "summary": "Find your designation groups",
+      "parameters": [],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/designation_groups.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/designation_groups.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Designation Groups API",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/designation_groups",
+      "operation_id": "createDesignationGroups",
+      "summary": "Create designation groups",
+      "parameters": [
+        {
+          "name": "Designation Groups Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/designation_groups.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/designation_groups.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Designation Groups API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/designations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/designations.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Designations API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/designations",
+      "operation_id": "findDesignations",
+      "summary": "Find your designations",
+      "parameters": [
+        {
+          "name": "ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/designations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/designations.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Designations API",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/designations",
+      "operation_id": "createDesignations",
+      "summary": "Create designations",
+      "parameters": [
+        {
+          "name": "Designation Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/designations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/designations.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Designations API",
+      "base_path": "/api",
+      "method": "PUT",
+      "path": "/designations",
+      "operation_id": "updateDesignations",
+      "summary": "Update designations",
+      "parameters": [
+        {
+          "name": "update_existing_gifts",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "simplified",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "Designation Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/designations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/designations.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Designations API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/event_registrations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/event_registrations.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Event Registrations API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/event_registrations",
+      "operation_id": "findEventRegistrations",
+      "summary": "Find your event registrations",
+      "parameters": [
+        {
+          "name": "state",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": [
+            "complete",
+            "incomplete",
+            "payment_processing",
+            "payment_failed"
+          ]
+        },
+        {
+          "name": "start",
+          "in": "query",
+          "required": false,
+          "type": "integer",
+          "enum": null
+        },
+        {
+          "name": "end",
+          "in": "query",
+          "required": false,
+          "type": "integer",
+          "enum": null
+        },
+        {
+          "name": "time_field",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": [
+            "completed_at",
+            "captured_at",
+            "deposited_at",
+            "created_at",
+            "updated_at"
+          ]
+        },
+        {
+          "name": "payment_state",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": [
+            "paid",
+            "authorized",
+            "partially_refunded"
+          ]
+        },
+        {
+          "name": "ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        },
+        {
+          "name": "event_ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        },
+        {
+          "name": "deposit_ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/event_registrations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/event_registrations.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Event Registrations API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/events/{id}/registrations",
+      "operation_id": "findEventRegistrations",
+      "summary": "Find your event registrations",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "integer",
+          "enum": null
+        },
+        {
+          "name": "state",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": [
+            "complete",
+            "incomplete",
+            "payment_processing",
+            "payment_failed"
+          ]
+        },
+        {
+          "name": "payment_state",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": [
+            "paid",
+            "authorized",
+            "partially_refunded"
+          ]
+        },
+        {
+          "name": "deposit_ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/event_registrations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/event_registrations.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Event Registrations API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/events.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/events.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Events API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/events",
+      "operation_id": "findEvents",
+      "summary": "Find your events",
+      "parameters": [
+        {
+          "name": "state",
+          "in": "query",
+          "required": true,
+          "type": "string",
+          "enum": [
+            "draft",
+            "active",
+            "complete"
+          ]
+        },
+        {
+          "name": "start",
+          "in": "query",
+          "required": false,
+          "type": "integer",
+          "enum": null
+        },
+        {
+          "name": "end",
+          "in": "query",
+          "required": false,
+          "type": "integer",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/events.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/events.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Events API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/form_fields.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/form_fields.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Form Fields API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/form_fields",
+      "operation_id": "findDesignations",
+      "summary": "Find your form fields",
+      "parameters": [],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/form_fields.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/form_fields.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Form Fields API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/gifts.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/gifts.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Gifts API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/gifts",
+      "operation_id": "findGifts",
+      "summary": "Find your gifts",
+      "parameters": [
+        {
+          "name": "start",
+          "in": "query",
+          "required": true,
+          "type": "integer",
+          "enum": null
+        },
+        {
+          "name": "end",
+          "in": "query",
+          "required": true,
+          "type": "integer",
+          "enum": null
+        },
+        {
+          "name": "authorized",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "charged_back",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "disputed",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "failed",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "paid",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "pending",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "pending_authorization",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "refunded",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "time_field",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": [
+            "captured_at",
+            "checkout_at",
+            "created_at",
+            "deposited_at",
+            "refunded_at",
+            "updated_at"
+          ]
+        },
+        {
+          "name": "ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        },
+        {
+          "name": "constituent_ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        },
+        {
+          "name": "deposit_ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/gifts.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/gifts.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Gifts API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/imported_gifts.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/imported_gifts.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Imported Gifts API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/imported_gifts",
+      "operation_id": "findImportedGifts",
+      "summary": "Find your imported gifts",
+      "parameters": [],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/imported_gifts.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/imported_gifts.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Imported Gifts API",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/imported_gifts",
+      "operation_id": "createImportedGifts",
+      "summary": "Create imported gifts",
+      "parameters": [
+        {
+          "name": "Create Imported Gift Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/imported_gifts.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/imported_gifts.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Imported Gifts API",
+      "base_path": "/api",
+      "method": "PUT",
+      "path": "/imported_gifts",
+      "operation_id": "updateImportedGifts",
+      "summary": "Update imported gifts",
+      "parameters": [
+        {
+          "name": "Updated Imported Gift Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/imported_gifts.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/imported_gifts.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Imported Gifts API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/opportunities.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/opportunities.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Opportunities API",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/opportunities/search",
+      "operation_id": "searchOpportunities",
+      "summary": "Search opportunities",
+      "parameters": [
+        {
+          "name": "search_request",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "202",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v1.0.0/opportunities.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/opportunities.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Opportunities API",
+      "base_path": "/api",
+      "method": "POST",
+      "path": "/opportunities",
+      "operation_id": "createOpportunities",
+      "summary": "Submit opportunities",
+      "parameters": [
+        {
+          "name": "opportunities",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "202",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v1.0.0/opportunities.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/opportunities.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Opportunities API",
+      "base_path": "/api",
+      "method": "PUT",
+      "path": "/opportunities",
+      "operation_id": "updateOpportunities",
+      "summary": "Update opportunities",
+      "parameters": [
+        {
+          "name": "opportunities",
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "202",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v1.0.0/opportunities.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/opportunities.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Opportunities API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "getOpportunityResults",
+      "summary": "Get processing results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "401",
+        "404",
+        "500"
+      ]
+    },
+    {
+      "spec": "v1.0.0/recurring_subscriptions.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/recurring_subscriptions.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Recurring Gifts API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/recurring_subscriptions",
+      "operation_id": "findRecurringSubscriptions",
+      "summary": "Find your recurring subscriptions",
+      "parameters": [
+        {
+          "name": "time_field",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": [
+            "canceled_on",
+            "created_at",
+            "end_date",
+            "last_run_date",
+            "next_run_date",
+            "reactivated_at",
+            "updated_at",
+            "updated_run_date"
+          ]
+        },
+        {
+          "name": "start",
+          "in": "query",
+          "required": false,
+          "type": "integer",
+          "enum": null
+        },
+        {
+          "name": "end",
+          "in": "query",
+          "required": false,
+          "type": "integer",
+          "enum": null
+        },
+        {
+          "name": "ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        },
+        {
+          "name": "constituent_ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/recurring_subscriptions.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/recurring_subscriptions.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Recurring Gifts API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/recurring_subscriptions/{subscription_id}",
+      "operation_id": "findRecurringSubscriptionById",
+      "summary": "Find a recurring subscription by its unique GC ID",
+      "parameters": [
+        {
+          "name": "subscription_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400"
+      ]
+    },
+    {
+      "spec": "v1.0.0/recurring_subscriptions.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v1.0.0/recurring_subscriptions.yaml",
+      "api_version": "v1.0.0",
+      "title": "GiveCampus Recurring Gifts API",
+      "base_path": "/api",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "400"
+      ]
+    },
+    {
+      "spec": "v2.0.0/constituents.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/constituents.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Constituents API V2",
+      "base_path": "/api/v2",
+      "method": "POST",
+      "path": "/constituents/search",
+      "operation_id": "searchConstituents",
+      "summary": "Search for constituents",
+      "parameters": [
+        {
+          "name": null,
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/constituents.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/constituents.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Constituents API V2",
+      "base_path": "/api/v2",
+      "method": "POST",
+      "path": "/constituents",
+      "operation_id": "createConstituents",
+      "summary": "Create constituents",
+      "parameters": [
+        {
+          "name": null,
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/constituents.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/constituents.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Constituents API V2",
+      "base_path": "/api/v2",
+      "method": "PUT",
+      "path": "/constituents",
+      "operation_id": "updateConstituents",
+      "summary": "Update constituents",
+      "parameters": [
+        {
+          "name": null,
+          "in": "body",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/constituents.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/constituents.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Constituents API V2",
+      "base_path": "/api/v2",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "401",
+        "404",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/designation_groups.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/designation_groups.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Designation Groups API V2",
+      "base_path": "/api/v2",
+      "method": "GET",
+      "path": "/designation_groups",
+      "operation_id": "findDesignationGroups",
+      "summary": "Find your designation groups",
+      "parameters": [],
+      "response_codes": [
+        "200",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/designation_groups.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/designation_groups.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Designation Groups API V2",
+      "base_path": "/api/v2",
+      "method": "POST",
+      "path": "/designation_groups",
+      "operation_id": "createDesignationGroups",
+      "summary": "Create designation groups",
+      "parameters": [
+        {
+          "name": "Designation Groups Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/designation_groups.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/designation_groups.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Designation Groups API V2",
+      "base_path": "/api/v2",
+      "method": "PUT",
+      "path": "/designation_groups",
+      "operation_id": "updateDesignationGroups",
+      "summary": "Update designation groups",
+      "parameters": [
+        {
+          "name": "Designation Groups Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/designation_groups.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/designation_groups.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Designation Groups API V2",
+      "base_path": "/api/v2",
+      "method": "DELETE",
+      "path": "/designation_groups",
+      "operation_id": "deleteDesignationGroups",
+      "summary": "Delete designation groups",
+      "parameters": [
+        {
+          "name": "Designation Groups Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/designation_groups.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/designation_groups.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Designation Groups API V2",
+      "base_path": "/api/v2",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "401",
+        "404",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/designations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/designations.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Designations API V2",
+      "base_path": "/api/v2",
+      "method": "GET",
+      "path": "/designations",
+      "operation_id": "findDesignations",
+      "summary": "Find your designations",
+      "parameters": [
+        {
+          "name": "ids",
+          "in": "query",
+          "required": false,
+          "type": "string",
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/designations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/designations.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Designations API V2",
+      "base_path": "/api/v2",
+      "method": "POST",
+      "path": "/designations",
+      "operation_id": "createDesignations",
+      "summary": "Create designations",
+      "parameters": [
+        {
+          "name": "Designation Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/designations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/designations.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Designations API V2",
+      "base_path": "/api/v2",
+      "method": "PUT",
+      "path": "/designations",
+      "operation_id": "updateDesignations",
+      "summary": "Update designations",
+      "parameters": [
+        {
+          "name": "update_existing_gifts",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "simplified",
+          "in": "query",
+          "required": false,
+          "type": "boolean",
+          "enum": null
+        },
+        {
+          "name": "Designation Details",
+          "in": "body",
+          "required": false,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "400",
+        "401",
+        "500"
+      ]
+    },
+    {
+      "spec": "v2.0.0/designations.yaml",
+      "spec_url": "https://www.givecampus.com/documentation/api/v2.0.0/designations.yaml",
+      "api_version": "v2.0.0",
+      "title": "GiveCampus Designations API V2",
+      "base_path": "/api/v2",
+      "method": "GET",
+      "path": "/results/{request_id}",
+      "operation_id": "findResults",
+      "summary": "Get your results",
+      "parameters": [
+        {
+          "name": "request_id",
+          "in": "path",
+          "required": true,
+          "type": null,
+          "enum": null
+        }
+      ],
+      "response_codes": [
+        "200",
+        "202",
+        "401",
+        "404",
+        "500"
+      ]
+    }
+  ]
+}
