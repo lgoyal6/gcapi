@@ -10,7 +10,7 @@ $ echo $?  ->  3
 
 $ gcapi bind --token sbx_DEMO_TOKEN_0001 --environment sandbox --label 'nightly CRM sync'
 bound token sha256 832bc43e5b77c7ca... -> sandbox
-store: /private/tmp/claude-501/-Users-lakshgoyal/5251cf3c-f63e-4908-9a39-a43174c48f4b/scratchpad/demo2.json (fingerprints only, never the token)
+store: demo-bindings.json (fingerprints only, never the token)
 
 $ gcapi preflight --token sbx_DEMO_TOKEN_0001 --base-url https://www.givecampus.com/api
 [STOP] Refusing to send a sandbox token to a production base URL (https://www.givecampus.com/api). GiveCampus documents that tokens created in production will not work in the sandbox and vice versa; generate a token in the environment you are targeting.

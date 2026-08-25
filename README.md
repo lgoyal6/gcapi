@@ -11,8 +11,6 @@ structurally rather than by promise (`tests/test_no_live_calls.py`).
 
 ---
 
----
-
 ## The short version
 
 **The problem.** GiveCampus publishes an API and ships no client library in any language, and
