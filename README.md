@@ -113,6 +113,46 @@ documented ones, is a refusal, not a shrug. Schools running the API on a custom 
 
 ---
 
+## Where the guard sits
+
+The environment check runs inside `Client.__init__`, before any `httpx.Client`
+exists. A mismatched token cannot reach the network to be rejected by a 401; there
+is no socket yet.
+
+```mermaid
+flowchart TD
+  A["Client(base_url, token)"] --> B["classify_base_url<br/>host to Environment"]
+  A --> C["SHA-256(token)<br/>looked up in the local binding"]
+  B --> D{"url environment ==<br/>token environment ?"}
+  C --> D
+  D -->|"no"| E["raise EnvironmentMismatch<br/>no httpx.Client constructed"]
+  D -->|"yes"| F["construct httpx.Client"]
+  F --> G["55 typed operations<br/>generated from their 16 YAML specs"]
+  G --> H["response to pydantic models<br/>extra=allow, DRIFT fields widened"]
+
+  style D fill:#1f6feb,color:#fff
+  style E fill:#b62324,color:#fff
+```
+
+GiveCampus publishes no token format, so the binding is local: the SHA-256 of a
+token is associated with an environment on your machine. The token itself never
+touches disk.
+
+## How the client is generated
+
+```mermaid
+flowchart LR
+  SPECS[("evidence/specs/<br/>16 published YAML files")] --> GEN["tools/generate_operations.py"]
+  GEN --> OPS[("src/gcapi/operations.json")]
+  OPS --> PY["src/gcapi/operations.py<br/>55 typed operations"]
+  PY --> CLIENT["Client methods"]
+  SPECS -.->|"read by hand"| MODELS["src/gcapi/models.py<br/>DRIFT comments where their<br/>examples disagree with the spec"]
+  MODELS --> CLIENT
+```
+
+Regenerating is `python tools/generate_operations.py`. Hand-editing
+`operations.py` is not the workflow: the specs are the source.
+
 ## Install and run
 
 ```bash
