@@ -1,0 +1,19 @@
+gcapi
+Copyright 2026 Laksh Goyal
+
+The code in this repository is licensed under the MIT License (see LICENSE).
+
+------------------------------------------------------------------------------
+GiveCampus API specifications
+
+Everything under evidence/specs/ is GiveCampus' own published API specification,
+committed verbatim so the generated client can be checked against the source it
+was generated from. Those files are GiveCampus' work, not mine, and the MIT grant
+above does not extend to them.
+
+src/gcapi/operations.json and src/gcapi/operations.py are generated from those
+specs by tools/generate_operations.py.
+
+This is an unofficial client. It is not affiliated with, endorsed by, or
+supported by GiveCampus. No request was made to any GiveCampus host during its
+development; tests/test_no_live_calls.py enforces that structurally.
